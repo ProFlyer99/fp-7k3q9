@@ -657,6 +657,7 @@ window.FPLive = function (D) {
   }
   function show() {
     var h = (location.hash || '').replace('#', '');
+    if (h === 'turn' && views.gnd) { h = 'gnd'; try { history.replaceState(null, '', '#gnd'); } catch (e) { } if (window.FPGnd) window.FPGnd.tab('otp'); }   // v3.9: STD timeline = GND · OTP
     if (!views[h] && h !== 'cockpit') h = 'now';
     if (h === 'cockpit' && (window.innerWidth < 1000 || !views['route-map'])) h = 'now';   // split cockpit view: landscape iPad only
     var split = h === 'cockpit';

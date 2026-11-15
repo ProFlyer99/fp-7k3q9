@@ -574,3 +574,37 @@ details.morech { margin: 10px 0; } details.morech > summary { min-height: 44px; 
 .ttab.tmtab { top: 58%; max-width: 150px; }
 .ttab.tmtab small { text-align: center; white-space: normal; overflow-wrap: anywhere; }
 .tbub.tmbub.late .tbcd { font-size: 16px; white-space: nowrap; }
+
+/* 3.9.0 GND – ground phase: Checklist + OTP */
+#gnd .gtabs { display: flex; gap: 8px; margin: 4px 0 12px; flex-wrap: wrap; }
+#gnd .gtabs button { min-height: 44px; padding: 8px 18px; border-radius: 22px; border: 1px solid var(--line); background: var(--panel); color: var(--fg); font-weight: 700; font-size: 15px; }
+#gnd .gtabs button.on { background: var(--cyan); border-color: var(--cyan); color: #04121c; }
+#gnd-chk[hidden], #gnd-otp[hidden] { display: none; }
+.ggrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; align-items: start; }
+.gcard { border: 1px solid var(--line); border-radius: 16px; background: var(--panel); padding: 12px 14px 14px; }
+.gcard.gdone { border-color: var(--grn); }
+.gcard .gch { display: flex; align-items: center; gap: 8px; }
+.gcard .gpr { flex: 1; font-size: 12.5px; font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; }
+.gcard .gic { min-height: 38px; min-width: 38px; padding: 0 10px; border-radius: 10px; border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: 16px; }
+.gcard .gic.garm { color: #fff; background: var(--red); border-color: var(--red); font-size: 13px; font-weight: 700; }
+.gcard h3 { margin: 8px 0 8px; font-size: 17px; letter-spacing: .02em; line-height: 1.25; }
+.gcard .gbarp { height: 5px; border-radius: 3px; background: var(--line); overflow: hidden; margin-bottom: 6px; }
+.gcard .gbarp i { display: block; height: 100%; background: var(--cyan); transition: width .25s; }
+.gcard.gdone .gbarp i { background: var(--grn); }
+.gcard ul { list-style: none; margin: 0; padding: 0; }
+.gcard .gbox { width: 100%; display: flex; align-items: center; gap: 12px; min-height: 46px; padding: 6px 4px; border: 0; border-bottom: 1px solid var(--line); background: transparent; color: var(--fg); text-align: left; font-size: 15px; font-weight: 600; }
+.gcard li:last-child .gbox { border-bottom: 0; }
+.gcard .gsq { flex: 0 0 28px; height: 28px; border-radius: 7px; border: 2px solid var(--cyan); display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 17px; color: #04121c; }
+.gcard .gbox.on .gsq { background: var(--grn); border-color: var(--grn); }
+.gcard .gbox.on .gtx { color: var(--muted); text-decoration: line-through; }
+.gcard .gtx { flex: 1; }
+.gcard .gbox small { font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.gcard .gmc { margin-top: 10px; min-height: 44px; width: 100%; border-radius: 12px; border: 1px solid var(--cyan); background: transparent; color: var(--cyan); font-weight: 800; font-size: 15px; }
+.gcard .gfin { margin-top: 10px; display: flex; align-items: center; gap: 10px; justify-content: space-between; color: var(--grn); font-weight: 800; }
+.gcard .gfin button { min-height: 38px; border-radius: 10px; border: 1px solid var(--line); background: transparent; color: var(--muted); font-weight: 700; }
+.gcard.gedit label { display: block; font-size: 12.5px; font-weight: 700; color: var(--muted); margin-bottom: 10px; }
+.gcard.gedit input, .gcard.gedit textarea { display: block; width: 100%; margin-top: 4px; box-sizing: border-box; font-size: 15px; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); font-family: inherit; }
+.gcard .gbar, .gfoot { display: flex; gap: 8px; flex-wrap: wrap; }
+.gcard .gbar button, .gfoot button { min-height: 44px; padding: 8px 16px; border-radius: 12px; border: 1px solid var(--line); background: var(--panel); color: var(--fg); font-weight: 700; }
+.gcard .gbar button.pri { background: var(--cyan); border-color: var(--cyan); color: #04121c; }
+.gfoot { margin-top: 16px; }

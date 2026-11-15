@@ -197,7 +197,7 @@ window.FPTurn = (function () {
           '<button type="button" data-tb="ack" data-i="' + i + '">Ack</button><button type="button" data-tb="hold" data-i="' + i + '">Hold</button><button type="button" class="tcok" data-tb="done" data-i="' + i + '">Complete</button>') + '</div></div></li>';
     }).join('');
     var perm = ('Notification' in window) ? Notification.permission : 'unsupported';
-    el.innerHTML = '<div class="bar"><span>STD timeline · ' + (dxb ? 'Dubai (DXB)' : 'outstation') + '</span><small>' + esc(REF) + ' · starts by itself at STD' + (PH[0][1] < 0 ? '−' + (-PH[0][1]) : '+' + PH[0][1]) + '</small></div>' + head +
+    el.innerHTML = '<div class="bar"><span>OTP · on-time performance timeline · ' + (dxb ? 'Dubai (DXB)' : 'outstation') + '</span><small>' + esc(REF) + ' · starts by itself at STD' + (PH[0][1] < 0 ? '−' + (-PH[0][1]) : '+' + PH[0][1]) + '</small></div>' + head +
       '<ol class="tlist">' + rows + '</ol>' + stdForm() +
       '<div class="tset"><button type="button" id="turn-test">Test alert</button>' +
       (perm === 'default' ? '<button type="button" id="turn-perm">Allow notifications</button>' : '<small>Notifications: ' + (perm === 'granted' ? 'allowed' : perm === 'denied' ? 'blocked in iPad Settings' : 'not supported here') + '</small>') +

@@ -83,3 +83,6 @@ Preparation aid only – the OFP, official Emirates documentation and ATC prevai
 
 ## 3.8.6 (16 NOV 2026)
 - STD timeline: × closes the bubble for the current phase only; every next phase brings the bubble back with its card next to it.
+
+## 3.9.0 (16 NOV 2026)
+- New GND (ground phase) item after DASH, aircraft-from-above icon. Two pages: Checklist (own cockpit flow cards: tick items with UTC time, Mark complete, Reset card, edit / add / delete cards, clear all ticks, restore defaults; cards kept on the iPad, ticks per flight) and OTP (the former STD−60 timeline). Old #turn links open GND · OTP.

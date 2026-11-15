@@ -28,7 +28,10 @@ window.FPMount = function (rec, opt) {
   if (hasWx && !rec.views.wxnotam) sv += '<section id="v-wxnotam" class="view" data-view="wxnotam" hidden><div id="wxnt"></div></section>';
   /* v3.8.2: the timeline wording comes in Claude's flight files; the iPad keeps the last one, so a flight built from an OFP alone gets it too (with its own STD) */
   try { if (D.turn && D.turn.phases && D.turn.phases.length) localStorage.setItem('fp.turn.def', JSON.stringify(D.turn)); else { var tdef = JSON.parse(localStorage.getItem('fp.turn.def') || 'null'); if (tdef && tdef.phases && tdef.phases.length) D.turn = tdef; } } catch (e) { }
-  if (D.flight && D.flight.std && D.turn && D.turn.phases && D.turn.phases.length) sv += '<section id="v-turn" class="view" data-view="turn" hidden><div id="turn"></div></section>';   // v3.8: STD timeline (phases from the flight file)
+  // v3.9 (pilot 16 NOV 26): GND = ground phase: Checklist (own cockpit flow) + OTP (STD timeline from the flight file)
+  var hasOtp = !!(D.flight && D.flight.std && D.turn && D.turn.phases && D.turn.phases.length);
+  if (D.flight) sv += '<section id="v-gnd" class="view" data-view="gnd" hidden><div id="gnd"><div class="gtabs" role="tablist"><button type="button" role="tab" data-gt="chk">Checklist</button>' +
+    (hasOtp ? '<button type="button" role="tab" data-gt="otp">OTP · on-time performance</button>' : '') + '</div><div id="gnd-chk"></div>' + (hasOtp ? '<div id="gnd-otp" hidden><div id="turn"></div></div>' : '') + '</div></section>';
   if (opt.app) sv += '<section id="v-regs" class="view" data-view="regs" hidden><div id="regs"></div></section>';   // v3: regulations library (app only)
   var ph = $('static-views'); if (ph) ph.outerHTML = sv;
   M.ensure = function (k) {
@@ -40,7 +43,7 @@ window.FPMount = function (rec, opt) {
   M.ensureAll = function () { Object.keys(pending).forEach(M.ensure); };
   M.isPending = function (k) { return !!pending[k]; };
   /* ---------- navigation: PREPARATION group, IN FLIGHT group (+ FLIGHTS in the app) */
-  var META = { dash: ['DASH', 'dash'], dep: ['DEP', 'dep'], wxnotam: ['WX·NOTAM', 'wx'], tem: ['TEM', 'tem'], arr: ['ARR', 'arr'], regs: ['REGS', 'book'], turn: ['STD−60', 'timer'], now: ['NOW', 'now'], waypoints: ['WPTS', 'wpt'], 'route-map': ['MAP', 'map'], flights: ['FLIGHTS', 'folder'] };
+  var META = { dash: ['DASH', 'dash'], dep: ['DEP', 'dep'], wxnotam: ['WX·NOTAM', 'wx'], tem: ['TEM', 'tem'], arr: ['ARR', 'arr'], regs: ['REGS', 'book'], gnd: ['GND', 'gnd'], now: ['NOW', 'now'], waypoints: ['WPTS', 'wpt'], 'route-map': ['MAP', 'map'], flights: ['FLIGHTS', 'folder'] };
   var FLT = { now: 1, enr: 1, map: 1 }, prep_ = [], flt = [], seen = {};
   rec.tabs.forEach(function (t) {
     var k = t[0]; if (!$('v-' + k) || seen[k]) return; seen[k] = 1;
@@ -48,7 +51,7 @@ window.FPMount = function (rec, opt) {
     (FLT[t[2]] || k === 'now' || k === 'waypoints' || k === 'route-map' ? flt : prep_).push(t);
   });
   if (hasWx && !seen.wxnotam) { var ix = prep_.map(function (t) { return t[0]; }).indexOf('dep'); prep_.splice(ix >= 0 ? ix + 1 : prep_.length, 0, ['wxnotam', 'WX · NOTAM', 'prep']); }
-  if ($('v-turn')) { var ixd = prep_.map(function (t) { return t[0]; }).indexOf('dash'); prep_.splice(ixd >= 0 ? ixd + 1 : 0, 0, ['turn', 'STD timeline', 'prep']); }
+  if ($('v-gnd')) { var ixd = prep_.map(function (t) { return t[0]; }).indexOf('dash'); prep_.splice(ixd >= 0 ? ixd + 1 : 0, 0, ['gnd', 'Ground phase – checklist and OTP', 'prep']); }
   if (opt.app && $('v-regs')) prep_.push(['regs', 'Regulations (Lido CRAR / RSI)', 'prep']);
   function item(t) {
     var k = t[0], m = META[k] || [t[1], 'page'];
@@ -66,6 +69,7 @@ window.FPMount = function (rec, opt) {
   // pages mounted now: pictures + reference links
   document.querySelectorAll('.view:not([data-lazy])').forEach(function (s) { if (window.FPImg) window.FPImg.hydrate(s); if (window.FPRefs) window.FPRefs.scan(s); });
   window.FPLive(rec.data);
+  if (window.FPGnd && $('gnd')) window.FPGnd.init(window.FPRec);   // v3.9
   if (window.FPTurn && $('turn')) window.FPTurn.init(rec.data);   // v3.8
 };
 
