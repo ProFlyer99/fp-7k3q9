@@ -566,3 +566,10 @@ details.morech { margin: 10px 0; } details.morech > summary { min-height: 44px; 
 .ttab b { font-size: 15px; font-variant-numeric: tabular-nums; } .ttab small { font-size: 11px; color: var(--muted); }
 .ttab.late { border-color: var(--red); } .ttab.hold { border-color: var(--amb); } .ttab.done { border-color: var(--grn); }
 .tcard.tanch { transform: none; width: min(360px, calc(100vw - 24px)); }
+
+/* 3.8.4 timer bubbles (same look as the STD timeline bubble) */
+.tbub.tmbub { z-index: 8985; }
+.tbub.tmbub .tbp { font-size: 11px; }
+.tbub.tmbub .tbcd { font-size: 22px; }
+.ttab.tmtab { top: 58%; max-width: 150px; }
+.ttab.tmtab small { text-align: center; white-space: normal; overflow-wrap: anywhere; }

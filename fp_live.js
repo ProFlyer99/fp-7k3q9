@@ -4,7 +4,7 @@
 window.FPLive = function (D) {
   'use strict';
   window.FPData = D;   // v3: shared read access for the small helpers (fp_refs.js)
-  var F = D.flight, T = F.trip, FC_MIN = 55;
+  var F = D.flight, T = F.trip, FC_MIN = 30;
   var KEY = 'fp:' + F.id, PKEY = 'fpapp:prefs';
   function def() { return { to: null, passed: -1, times: {}, done: {}, fuel: {}, fc: null, fcLog: [], ib: null }; }
   var S = def();
@@ -113,13 +113,13 @@ window.FPLive = function (D) {
     else { setTO(n); toast('Airborne ' + n + 'Z – clock running.'); }
   });
 
-  /* ---------- fuel-check timer: every tap restarts 55:00 */
+  /* ---------- fuel-check timer: every tap restarts 30:00 (pilot 15 NOV 26: every 30 min) */
   function fcLeft() { if (!S.fc) return null; return FC_MIN * 60 - (Date.now() - new Date(S.fc).getTime()) / 1000; }
   function fcReset() {
     var prev = S.fc, prevLog = S.fcLog.slice();
     S.fc = new Date().toISOString(); S.fcLog.push(S.fc); if (S.fcLog.length > 40) S.fcLog.shift();
     save(); paintFC(); tick(true);
-    toast('Fuel check at ' + isoZ(S.fc) + ' – timer restarted, 55:00.', function () { S.fc = prev; S.fcLog = prevLog; save(); paintFC(); tick(true); });
+    toast('Fuel check at ' + isoZ(S.fc) + ' – timer restarted, 30:00.', function () { S.fc = prev; S.fcLog = prevLog; save(); paintFC(); tick(true); });
   }
   on('fc', 'click', fcReset);
   function fcStop() { var prev = S.fc; S.fc = null; save(); paintFC(); tick(true); toast('Fuel check timer stopped.', function () { S.fc = prev; save(); paintFC(); tick(true); }); }
@@ -131,7 +131,7 @@ window.FPLive = function (D) {
       b.classList.remove('amb', 'red', 'idle'); if (st) b.classList.add(st);
       lab.textContent = st === 'red' ? 'FUEL CHECK DUE' : 'FUEL CHECK';
       t.textContent = left === null ? 'START' : (left > 0 ? mmss(left) : '+' + mmss(-left));
-      b.setAttribute('aria-label', left === null ? 'Start the 55 minute fuel check timer' : 'Fuel check timer ' + t.textContent + ' – tap after the fuel check to restart 55 minutes');
+      b.setAttribute('aria-label', left === null ? 'Start the 30 minute fuel check timer' : 'Fuel check timer ' + t.textContent + ' – tap after the fuel check to restart 30 minutes');
     }
   }
 
@@ -296,7 +296,7 @@ window.FPLive = function (D) {
         box.innerHTML = A.map(function (a) {
           if (a.tm) return '<div class="al ' + a.cls + '"><span class="alk">TIMER</span><span class="alw"><b>' + esc(a.name) + '</b> <span class="alc" data-tm="' + a.id + '"></span></span><button type="button" data-act="tm" data-id="' + a.id + '">' + (a.rep ? 'Done · restart' : 'Done') + '</button></div>';
           if (a.ib) return '<div class="al ' + a.cls + '"><span class="alk">IFBP</span><span class="alw"><b>IFBP 126.9 broadcast</b> <span class="alc" data-ib="1"></span></span><button type="button" data-act="ib">Broadcast done</button></div>';
-          if (a.fc) return '<div class="al ' + a.cls + '"><span class="alk">FUEL</span><span class="alw"><b>Fuel check</b> <span class="alc" data-fc="1"></span></span><button type="button" data-act="fc">Done · restart 55:00</button></div>';
+          if (a.fc) return '<div class="al ' + a.cls + '"><span class="alk">FUEL</span><span class="alw"><b>Fuel check</b> <span class="alc" data-fc="1"></span></span><button type="button" data-act="fc">Done · restart 30:00</button></div>';
           return '<div class="al ' + a.cls + '"><span class="alk">CALL</span><a class="alw" href="#waypoints"><b>' + esc(a.d.fir) + ' ' + esc(a.d.name) + '</b> by ' + hm(a.d.eet) +
             ' · <span class="alc" data-eet="' + a.d.eet + '"></span><small>' + esc(a.d.text) + '</small></a><button type="button" data-done="' + esc(a.d.id) + '">Done</button></div>';
         }).join('');
@@ -375,7 +375,7 @@ window.FPLive = function (D) {
       var f = null; if (r.bnd) (D.firseq || D.firs).forEach(function (x) { if (x.fir === r.fir && (r.fir_eet == null || x.eet_min === r.fir_eet)) f = x; });
       it.push({ k: 'w:' + r.i, t: r.eet, what: r.wpt + (r.bnd ? ' ▶ ' + r.fir + ' ' + r.firname + (f && f.eet_min !== r.eet ? ' (FIR ' + hm(f.eet_min) + ')' : '') : ''), kind: r.bnd ? 'fir' : 'wpt' });
     });
-    var left = fcLeft(); if (left !== null) it.push({ k: 'fc', t: e + left / 60, what: 'Fuel check due (55-min timer)', kind: 'fc' });
+    var left = fcLeft(); if (left !== null) it.push({ k: 'fc', t: e + left / 60, what: 'Fuel check due (30-min timer)', kind: 'fc' });
     var g = inIfbp(e), il = ibLeft(); if (g && e >= g.a && il !== null) it.push({ k: 'ib', t: e + il / 60, what: 'IFBP broadcast due (20-min timer)', kind: 'ib' });
     if (TOOLS) TOOLS.items(e).forEach(function (x) { it.push(x); });
     it.sort(function (a, b) { return a.t - b.t; });
@@ -451,7 +451,7 @@ window.FPLive = function (D) {
     if (box._sig !== sig) {
       box._sig = sig;
       box.innerHTML = na ? '<div class="in" data-t="' + na.t + '"></div><div class="what"><span class="tag k-' + na.kind + '">' + (KIND[na.kind] || na.kind.toUpperCase()) + '</span> ' + esc(na.what) + '</div>' +
-        '<div class="meta"><span data-meta="1"></span>' + (na.kind === 'call' ? ' <button type="button" data-done="' + esc(na.id) + '">Done</button>' : '') + (na.kind === 'fc' ? ' <button type="button" data-act="fc">Done · restart 55:00</button>' : '') +
+        '<div class="meta"><span data-meta="1"></span>' + (na.kind === 'call' ? ' <button type="button" data-done="' + esc(na.id) + '">Done</button>' : '') + (na.kind === 'fc' ? ' <button type="button" data-act="fc">Done · restart 30:00</button>' : '') +
         (na.kind === 'ib' ? ' <button type="button" data-act="ib">Broadcast done · restart 20:00</button>' : '') + '</div>'
         : '<div class="what">All planned items passed.</div>';
     }

@@ -72,3 +72,7 @@ Preparation aid only – the OFP, official Emirates documentation and ATC prevai
 
 ## 3.8.3 (15 NOV 2026)
 - STD timeline: a STD typed by hand is the next time that clock time comes up (or up to 3 h ago = a delay already running), whatever the date of the loaded flight. Timeline starts 1 h before it. "Use OFP STD" goes back to the flight's own STD.
+
+## 3.8.4 (15 NOV 2026)
+- Fuel check timer: every 30 min (was 55).
+- Timer bubbles: every running timer (fuel check, quick-start or your own) gets a draggable bubble on every page with countdown, UTC due time and its full title. − hides it to the edge tab (still running), × closes it (still running) until Done / Stop on the Timers page; "Bubble" on the Timers page brings a closed one back. Tap a bubble = Timers.

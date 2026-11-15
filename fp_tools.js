@@ -43,7 +43,7 @@ window.FPTools = function (A) {
   function tById(id) { for (var i = 0; i < S.timers.length; i++) if (S.timers[i].id === id) return S.timers[i]; return null; }
   function addTimer(name, min, rep, atE) {
     var end = atE != null ? Date.now() + (atE - A.el()) * 60000 : Date.now() + min * 60000;
-    var t = { id: 't' + Date.now().toString(36), name: name || 'Timer', min: min || 0, end: end, rep: !!rep && !!min };
+    var t = { id: 't' + Date.now().toString(36), name: name || 'Timer', min: min || 0, end: end, rep: !!rep && !!min, start: Date.now(), bub: 'on' };
     S.timers.push(t); A.save(); A.toast(t.name + ' – ' + (atE != null ? 'at ' + zt(atE) : min + ' min') + (t.rep ? ', repeats' : '') + '.', function () { S.timers = S.timers.filter(function (x) { return x !== t; }); A.save(); A.tick(true); rerender(); });
     A.tick(true);
   }
@@ -56,21 +56,21 @@ window.FPTools = function (A) {
   function leftTxt(id) { var t = tById(id); if (!t) return ''; var l = tLeft(t); return l > 0 ? 'in ' + A.mmss(l) : 'DUE +' + A.mmss(-l); }
   function fcBlock() {   // v2.0: the fuel check timer lives here (no header button any more)
     var l = A.fcLeft ? A.fcLeft() : null, cls = l === null ? '' : (l <= 0 ? 'red' : (l <= 300 ? 'amb' : ''));
-    return '<div class="tmr tfc ' + cls + '"><div><b>Fuel check</b><small>55-min timer · tap after each fuel check' + (S.fc ? ' · last ' + A.isoZ(S.fc) : '') + '</small></div>' +
-      '<span class="tmc" data-tmfc="1">' + (l === null ? 'not running' : (l > 0 ? 'in ' + A.mmss(l) : 'DUE +' + A.mmss(-l))) + '</span><div class="tmb2"><button type="button" data-act="fc" class="pri">' + (l === null ? 'Start 55:00' : 'Done · restart') + '</button>' +
-      (l !== null ? '<button type="button" data-act="x-fcstop">Stop</button>' : '') + '</div></div>';
+    return '<div class="tmr tfc ' + cls + '"><div><b>Fuel check</b><small>30-min timer · tap after each fuel check' + (S.fc ? ' · last ' + A.isoZ(S.fc) : '') + '</small></div>' +
+      '<span class="tmc" data-tmfc="1">' + (l === null ? 'not running' : (l > 0 ? 'in ' + A.mmss(l) : 'DUE +' + A.mmss(-l))) + '</span><div class="tmb2"><button type="button" data-act="fc" class="pri">' + (l === null ? 'Start 30:00' : 'Done · restart') + '</button>' +
+      (l !== null && S.fcBub && S.fcBub !== 'on' ? '<button type="button" data-act="x-tmbub" data-id="fc">Bubble</button>' : '') + (l !== null ? '<button type="button" data-act="x-fcstop">Stop</button>' : '') + '</div></div>';
   }
   function timersHtml() {
     var h = fcBlock() + '<div class="tml">' + (S.timers.length ? S.timers.slice().sort(function (a, b) { return a.end - b.end; }).map(function (t) {
       var l = tLeft(t);
       return '<div class="tmr ' + (l <= 0 ? 'red' : (l <= 120 ? 'amb' : '')) + '"><div><b>' + esc(t.name) + '</b><small>' + (t.rep ? 'every ' + t.min + ' min' : (t.min ? t.min + ' min' : 'at ' + A.isoZ(new Date(t.end).toISOString()))) + ' · due ' + A.isoZ(new Date(t.end).toISOString()) + '</small></div>' +
         '<span class="tmc" data-tml="' + t.id + '">' + leftTxt(t.id) + '</span><div class="tmb2"><button type="button" data-act="tm" data-id="' + t.id + '">' + (t.rep ? 'Done · restart' : 'Done') + '</button>' +
-        '<button type="button" data-act="x-tm5" data-id="' + t.id + '">+5</button><button type="button" data-act="x-tmdel" data-id="' + t.id + '">Stop</button></div></div>';
+        (t.bub && t.bub !== 'on' ? '<button type="button" data-act="x-tmbub" data-id="' + t.id + '">Bubble</button>' : '') + '<button type="button" data-act="x-tm5" data-id="' + t.id + '">+5</button><button type="button" data-act="x-tmdel" data-id="' + t.id + '">Stop</button></div></div>';
     }).join('') : '<p class="note">No timers running.</p>') + '</div>';
     h += '<h3 class="shh">Quick start</h3><div class="chips">' + PRESET.map(function (p, i) { return '<button type="button" class="chipbtn" data-act="x-tmp" data-i="' + i + '">' + esc(p[0]) + ' · ' + p[1] + ' min' + (p[2] ? ' ↻' : '') + '</button>'; }).join('') + '</div>';
     h += '<h3 class="shh">New timer</h3><div class="frm"><label>Name<input id="tm-n" maxlength="40" placeholder="e.g. Call OCC"></label><label>Minutes<input id="tm-m" inputmode="numeric" maxlength="4" placeholder="30"></label>' +
       '<label>or at UTC<input id="tm-at" inputmode="numeric" maxlength="4" placeholder="HHMM"></label><label class="ckl"><input type="checkbox" id="tm-r"> repeat</label><button type="button" data-act="x-tmadd" class="pri">Start</button></div>' +
-      '<p class="note">Timers show in the alert bar (2 min before and when due), in Up next and on NOW, and chime when due if sound alerts are on. Stored per flight on this iPad.</p>';
+      '<p class="note">Timers show in the alert bar (2 min before and when due), in Up next and on NOW, and chime when due if sound alerts are on. Each running timer also has a bubble you can drag on every page: − hides it to the edge tab, × closes it; the timer keeps running until you tap Done or Stop here. Stored per flight on this iPad.</p>';
     return h;
   }
   function openTimers() { openSheet('timers', 'Timers', timersHtml, { tick: function () { SB.querySelectorAll('[data-tml]').forEach(function (s) { s.textContent = leftTxt(s.dataset.tml); });
@@ -87,6 +87,71 @@ window.FPTools = function (A) {
     L.forEach(function (x) { var b = TMX.querySelector('[data-k="' + x.id + '"]'); if (!b) return; b.querySelector('b').textContent = x.l > 0 ? A.mmss(x.l) : 'DUE +' + A.mmss(-x.l); b.className = 'tmxc' + (x.l <= 0 ? ' red' : (x.l <= x.amb ? ' amb' : '')); });
     TMX.hidden = !L.length;
   }
+
+  /* ---------- v3.8.4 timer bubbles (pilot request 15 NOV 26): every running timer (fuel check + own timers) gets a draggable bubble on every page
+     with countdown, UTC due time and its full title; − hides it to the edge tab (still running), × closes it (still running) until Done / Stop
+     on the Timers page. Tap a bubble = Timers. */
+  var TB = {}, TTAB = null, TPK = 'fp.tmr.bubpos', TPOS = {};
+  try { TPOS = JSON.parse(localStorage.getItem(TPK) || '{}') || {}; } catch (e) { TPOS = {}; }
+  function tpSave() { try { localStorage.setItem(TPK, JSON.stringify(TPOS)); } catch (e) { } }
+  function zz(ms) { var d = new Date(ms); return pad(d.getUTCHours()) + pad(d.getUTCMinutes()) + 'Z'; }
+  function bubList() {
+    var L = [], fl = A.fcLeft ? A.fcLeft() : null;
+    if (fl === null && S.fcBub) { delete S.fcBub; A.save(); }
+    if (fl !== null) { if (!S.fcBub) { S.fcBub = 'on'; A.save(); }
+      var fs = new Date(S.fc).getTime(); L.push({ id: 'fc', n: 'Fuel check', l: fl, len: 30 * 60, amb: 300, sub: 'every 30 min', end: fs + 30 * 60000, mode: S.fcBub }); }
+    S.timers.forEach(function (t) { var len = t.min ? t.min * 60 : Math.max(60, (t.end - (t.start || t.end - 3600000)) / 1000);
+      L.push({ id: t.id, n: t.name, l: tLeft(t), len: len, amb: 120, sub: t.rep ? 'every ' + t.min + ' min' : (t.min ? t.min + ' min' : 'at ' + zz(t.end)), end: t.end, mode: t.bub || 'on' }); });
+    return L;
+  }
+  function setMode(id, m) { if (id === 'fc') S.fcBub = m; else { var t = tById(id); if (t) t.bub = m; } A.save(); paintBubs(); if (sheet && sheet.kind === 'timers') rerender(); }
+  function tbPlace(b, id, idx) {
+    var W = window.innerWidth, H = window.innerHeight, w = b.offsetWidth || 130, h = b.offsetHeight || 150, p = TPOS[id];
+    var x = p ? p.x * W : 24 + idx * (Math.max(w, 150) + 16), y = p ? p.y * H : H - h - 90;
+    x = Math.max(4, Math.min(W - w - 4, x)); y = Math.max(4, Math.min(H - h - 4, y)); b.style.left = x + 'px'; b.style.top = y + 'px';
+  }
+  function makeBub(id) {
+    var b = document.createElement('div'); b.className = 'tbub tmbub'; b.dataset.k = id; b.hidden = true;
+    b.innerHTML = '<button type="button" class="tbc tbmin" aria-label="Hide this timer bubble">−</button><button type="button" class="tbc tbx" aria-label="Close this timer bubble">×</button>' +
+      '<div class="tbr"><svg viewBox="0 0 112 112" aria-hidden="true"><circle cx="56" cy="56" r="51" class="tbtrack"/><circle cx="56" cy="56" r="51" class="tbarc" transform="rotate(-90 56 56)"/></svg>' +
+      '<span class="tbp"></span><b class="tbcd"></b><small class="tbex"></small></div><div class="tbt"></div>';
+    document.body.appendChild(b);
+    b.querySelector('.tbmin').addEventListener('click', function (ev) { ev.stopPropagation(); setMode(id, 'hidden'); });
+    b.querySelector('.tbx').addEventListener('click', function (ev) { ev.stopPropagation(); setMode(id, 'closed'); A.toast('Bubble closed – the timer keeps running. Stop it on the Timers page.'); });
+    var drag = null, moved = false;
+    b.addEventListener('pointerdown', function (e) { if (e.target.closest('.tbc')) return; drag = { dx: e.clientX - b.offsetLeft, dy: e.clientY - b.offsetTop, x0: e.clientX, y0: e.clientY }; moved = false; try { b.setPointerCapture(e.pointerId); } catch (x) { } b.classList.add('drag'); });
+    b.addEventListener('pointermove', function (e) {
+      if (!drag) return; if (Math.abs(e.clientX - drag.x0) + Math.abs(e.clientY - drag.y0) > 6) moved = true; if (!moved) return;
+      var W = window.innerWidth, H = window.innerHeight, x = Math.max(4, Math.min(W - b.offsetWidth - 4, e.clientX - drag.dx)), y = Math.max(4, Math.min(H - b.offsetHeight - 4, e.clientY - drag.dy));
+      b.style.left = x + 'px'; b.style.top = y + 'px'; TPOS[id] = { x: x / W, y: y / H }; e.preventDefault();
+    });
+    function up() { if (!drag) return; b.classList.remove('drag'); if (moved) tpSave(); else openTimers(); drag = null; }
+    b.addEventListener('pointerup', up); b.addEventListener('pointercancel', up);
+    return b;
+  }
+  function paintBubs() {
+    var L = bubList(), seen = {}, hid = [];
+    L.forEach(function (x, i) {
+      seen[x.id] = 1; var b = TB[x.id]; if (!b) b = TB[x.id] = makeBub(x.id);
+      var was = b.hidden; b.hidden = x.mode !== 'on'; if (x.mode === 'hidden') hid.push(x);
+      var cls = x.l <= 0 ? 'late' : (x.l <= x.amb ? 'hold' : 'run');
+      b.className = 'tbub tmbub ' + cls + (b.classList.contains('drag') ? ' drag' : '');
+      b.querySelector('.tbp').textContent = x.sub;
+      b.querySelector('.tbcd').textContent = x.l > 0 ? A.mmss(x.l) : 'DUE +' + A.mmss(-x.l);
+      b.querySelector('.tbex').textContent = (x.l > 0 ? 'due ' : 'was due ') + zz(x.end);
+      var C2 = 2 * Math.PI * 51, arc = b.querySelector('.tbarc'); arc.style.strokeDasharray = C2.toFixed(1); arc.style.strokeDashoffset = (C2 * (1 - Math.max(0, Math.min(1, x.l / x.len)))).toFixed(1);
+      b.querySelector('.tbt').textContent = x.n;   // the full title, never shortened
+      if (was && !b.hidden) tbPlace(b, x.id, i);
+    });
+    Object.keys(TB).forEach(function (k) { if (!seen[k]) { TB[k].remove(); delete TB[k]; } });
+    if (!TTAB) { TTAB = document.createElement('button'); TTAB.type = 'button'; TTAB.id = 'tm-tab'; TTAB.className = 'ttab tmtab'; TTAB.hidden = true; TTAB.setAttribute('aria-label', 'Show the hidden timer bubbles');
+      TTAB.addEventListener('click', function () { bubList().forEach(function (x) { if (x.mode === 'hidden') setMode(x.id, 'on'); }); }); document.body.appendChild(TTAB); }
+    TTAB.hidden = !hid.length;
+    if (hid.length) { hid.sort(function (a, b) { return a.l - b.l; }); var h0 = hid[0];
+      TTAB.innerHTML = '<b>' + esc(h0.l > 0 ? A.mmss(h0.l) : 'DUE') + '</b><small>' + esc(h0.n) + '</small>' + (hid.length > 1 ? '<small>+' + (hid.length - 1) + ' more</small>' : '');
+      TTAB.className = 'ttab tmtab ' + (h0.l <= 0 ? 'late' : (h0.l <= h0.amb ? 'hold' : '')); }
+  }
+  window.addEventListener('resize', function () { var i = 0; Object.keys(TB).forEach(function (k) { if (!TB[k].hidden) tbPlace(TB[k], k, i++); }); });
   on('b-timer', 'click', openTimers);
   var fired = {};
   function tmAlerts() {
@@ -611,6 +676,7 @@ window.FPTools = function (A) {
       else if (m > 0 && m <= 720) addTimer(n || m + '-min timer', m, r); else { A.toast('Enter minutes (1–720) or a UTC time.'); return; }
       rerender();
     }
+    else if (a === 'x-tmbub') { if (b.dataset.id === 'fc') S.fcBub = 'on'; else { var tb = tById(b.dataset.id); if (tb) tb.bub = 'on'; } A.save(); paintBubs(); rerender(); }
     else if (a === 'x-tm5') { var t = tById(b.dataset.id); if (t) { t.end += 300000; A.save(); A.tick(true); rerender(); } }
     else if (a === 'x-tmdel') { var id = b.dataset.id, prev = JSON.stringify(S.timers); S.timers = S.timers.filter(function (x) { return x.id !== id; }); A.save(); A.tick(true); rerender(); A.toast('Timer stopped.', function () { S.timers = JSON.parse(prev); A.save(); A.tick(true); }); }
     else if (a === 'x-aoi') { var ic = b.dataset.icao; openSheet('aoi', ic + ' – Lido AOI / CCI', function () { return aptFacts(ic); }, { wide: true }); }
@@ -648,7 +714,7 @@ window.FPTools = function (A) {
     var s = $('tm-soon');
     if (s) { var ts = S.timers.slice().sort(function (a, b) { return a.end - b.end; })[0], l = ts ? tLeft(ts) : null; s.textContent = ts ? (l > 0 ? A.mmss(l) : 'DUE') : ''; s.parentNode.classList.toggle('due', !!ts && l <= 120); }
     if (sheet && sheet.tick) sheet.tick(e);
-    paintTmx();
+    paintTmx(); paintBubs();
     if (T2 && T2.tick) T2.tick(e);
   }
   function shown(h) { if (MENU) MENU.hidden = true; if (T2 && T2.shown) T2.shown(h); }
