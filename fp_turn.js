@@ -1,4 +1,4 @@
-/* fp_turn.js v1.5 (15 NOV 26) - STD TIMELINE page: a departure timeline counted from STD, run as live timers.
+/* fp_turn.js v1.6 (15 NOV 26) - STD TIMELINE page: a departure timeline counted from STD, run as live timers.
    The phases, their wording and the reference are read from the loaded flight file (data.turn) - this file holds no company text.
    - Starts by itself at the first phase on the flight's date (STD and date from the loaded flight; the pilot can type a new STD for a delay).
    - When a phase starts: chime + a phase card on screen (+ an iOS / browser notification when allowed) with Acknowledge / Hold / Complete.
@@ -51,12 +51,13 @@ window.FPTurn = (function () {
     if (s === 'hold') it.until = now() + HOLD_MIN * 60000; else delete it.until;
     st.items[id] = it; save(); if (cardFor === i) closeCard(); render(); check(true);
   }
-  function chime(n) { try { if (C && C.chime) C.chime(n, true); } catch (e) { } }
+  function soundOn() { try { return !!(C && C.soundOn && C.soundOn()); } catch (e) { return false; } }
+  function chime(n) { try { if (C && C.chime && soundOn()) C.chime(n); } catch (e) { } }   // v1.6 (pilot 16 NOV 26): Sound alerts off = no OTP chime
   function notify(i, again) {
     try {
       if (!('Notification' in window) || Notification.permission !== 'granted') return;
       var body = PH[i][3 + (isDxb() || !PH[i][4] ? 0 : 1)] || PH[i][3], title = (again ? 'HOLD · ' : '') + 'STD ' + (PH[i][1] < 0 ? PH[i][1] : '+' + PH[i][1]) + ' · ' + PH[i][2];
-      var o = { body: body, tag: 'fp-turn-' + PH[i][0], renotify: true };
+      var o = { body: body, tag: 'fp-turn-' + PH[i][0], renotify: true, silent: !soundOn() };   // Sound alerts off = silent notification
       if (navigator.serviceWorker && navigator.serviceWorker.ready) navigator.serviceWorker.ready.then(function (r) { r.showNotification(title, o); }).catch(function () { try { new Notification(title, o); } catch (e) { } });
       else new Notification(title, o);
     } catch (e) { }

@@ -197,7 +197,7 @@ window.FPLive = function (D) {
     inp.onkeydown = function (e) { if (e.key === 'Enter') { e.preventDefault(); if (!setAto(i, inp.value)) inp.classList.add('bad'); } if (e.key === 'Escape') { st.innerHTML = ''; paintWpt(); } };
     inp.onclick = function (e) { e.stopPropagation(); };
   }, true);
-  window.FPCore = { D: D, S: S, tap: tap, setAto: setAto, setTO: function (v) { setTO(v); }, el: el, elReal: elReal, rev: rev, offMin: offMin, atoRow: atoRow, hm: hm, zt: zt, toMin: toMin, isoZ: isoZ, inTxt: inTxt, nowHHMM: nowHHMM, isPlan: isPlan, save: save, toast: toast, chime: chime };
+  window.FPCore = { D: D, S: S, tap: tap, setAto: setAto, setTO: function (v) { setTO(v); }, el: el, elReal: elReal, rev: rev, offMin: offMin, atoRow: atoRow, hm: hm, zt: zt, toMin: toMin, isoZ: isoZ, inTxt: inTxt, nowHHMM: nowHHMM, isPlan: isPlan, save: save, toast: toast, chime: chime, soundOn: function () { return !!P.sound; } };
   if (window.FPUx) window.FPUx.init(window.FPCore);
   on('undo', 'click', function () { if (S.passed >= 0) { delete S.times[S.passed]; S.passed--; save(); paintWpt(); tick(true); } });
   on('reset', 'click', function () { ask('Clear all passed waypoints?', 'Clear', function () { S.passed = -1; S.times = {}; save(); paintWpt(); tick(true); }); });
