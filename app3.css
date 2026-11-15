@@ -546,3 +546,23 @@ details.morech { margin: 10px 0; } details.morech > summary { min-height: 44px; 
 .tcard .tcb button { min-height: 44px; padding: 6px 16px; font-weight: 800; }
 .tcard .tcb .tcl { margin-left: auto; }
 @media (max-width: 700px) { #turn .trow { grid-template-columns: 52px 1fr; } #turn .trow .tr { grid-column: 1 / -1; flex-direction: row; justify-content: space-between; } }
+/* ---------- v3.8.1 STD timeline bubble */
+.tbub { position: fixed; z-index: 8990; display: flex; flex-direction: column; align-items: center; gap: 6px; touch-action: none; user-select: none; -webkit-user-select: none; cursor: grab; max-width: 240px; }
+.tbub[hidden], .ttab[hidden] { display: none; }
+.tbub.drag { cursor: grabbing; }
+.tbub .tbr { position: relative; width: 112px; height: 112px; border-radius: 50%; background: var(--panel); border: 1px solid var(--line); display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 6px 22px rgba(0,0,0,.28); }
+.tbub svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.tbub .tbtrack { fill: none; stroke: var(--line); stroke-width: 6; }
+.tbub .tbarc { fill: none; stroke: var(--cyan); stroke-width: 6; stroke-linecap: round; transition: stroke-dashoffset .9s linear; }
+.tbub.late .tbarc { stroke: var(--red); } .tbub.hold .tbarc { stroke: var(--amb); } .tbub.done .tbarc { stroke: var(--grn); }
+.tbub .tbp { position: relative; font-size: 12px; font-weight: 700; color: var(--muted); }
+.tbub .tbcd { position: relative; font-size: 24px; font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.tbub .tbex { position: relative; font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.tbub .tbt { text-align: center; font-size: 12.5px; font-weight: 700; line-height: 1.25; padding: 4px 9px; border-radius: 8px; background: var(--panel); border: 1px solid var(--line); color: var(--fg); box-shadow: 0 3px 10px rgba(0,0,0,.18); white-space: normal; overflow-wrap: anywhere; }
+.tbub.late .tbt { border-color: var(--red); } .tbub.hold .tbt { border-color: var(--amb); } .tbub.done .tbt { border-color: var(--grn); }
+.tbub .tbc { position: absolute; top: -4px; z-index: 2; width: 30px; height: 30px; min-height: 30px; padding: 0; border-radius: 50%; font-size: 18px; font-weight: 800; line-height: 1; background: var(--panel); border: 1px solid var(--line); color: var(--muted); }
+.tbub .tbmin { left: calc(50% - 64px); } .tbub .tbx { right: calc(50% - 64px); }
+.ttab { position: fixed; z-index: 8990; right: 0; top: 42%; display: flex; flex-direction: column; align-items: center; gap: 1px; padding: 8px 10px 8px 12px; border-radius: 12px 0 0 12px; border: 1px solid var(--line); border-right: 0; background: var(--panel); color: var(--fg); box-shadow: 0 4px 14px rgba(0,0,0,.25); min-height: 0; }
+.ttab b { font-size: 15px; font-variant-numeric: tabular-nums; } .ttab small { font-size: 11px; color: var(--muted); }
+.ttab.late { border-color: var(--red); } .ttab.hold { border-color: var(--amb); } .ttab.done { border-color: var(--grn); }
+.tcard.tanch { transform: none; width: min(360px, calc(100vw - 24px)); }

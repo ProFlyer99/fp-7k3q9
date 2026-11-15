@@ -1,4 +1,4 @@
-# Flight Prep app 3.8.0 (15 NOV 2026) – update and set-up
+# Flight Prep app 3.8.1 (15 NOV 2026) – update and set-up
 
 The app files hold **no flight data and no company data**. Flights and library files are loaded from the Files app on your iPad and are
 never uploaded anywhere. **Never put a flight file or a library file in the GitHub repository – the repository is public.**
@@ -7,7 +7,7 @@ never uploaded anywhere. **Never put a flight file or a library file in the GitH
 1. Unzip the app zip. All app files are in ONE folder – there are no sub-folders to keep.
 2. In your repository on GitHub: **Add file → Upload files**, select **all** files of the folder, **Commit changes**. They replace the old ones.
 3. Wait 1–2 minutes. Open the app with internet and tap **Update now** when it offers it (or close and reopen the app twice).
-   **FLIGHTS** shows "Flight Prep 3.8.0".
+   **FLIGHTS** shows "Flight Prep 3.8.1".
 4. Load the new `regs_library.json` once (FLIGHTS → Load …). It carries the DocuNet link list for the references.
 
 Old files you can delete from the repository (no longer used): `wx.yml`, `wx_fetch.py`, `notam_fetch.py`, `stations.txt`, any old app zip.
@@ -30,6 +30,12 @@ Old files you can delete from the repository (no longer used): `wx.yml`, `wx_fet
 ## Library files (load once, used by every flight)
 `apt_*.json` airport packs · `fir_library.json` FIR comms · `regs_library.json` country rules + DocuNet link list · `mel_library.json` MEL ·
 `route_*.json` route packs. Select several at once; FLIGHTS lists what is stored.
+
+## New in 3.8.1
+- **Timeline bubble**: from STD−60 a round bubble stays on every page with the current phase, the time left, the UTC time it runs out and
+  the full phase title. Drag it anywhere (the place is remembered); tap it for Acknowledge / Hold / Complete; **−** hides it to a tab on the
+  right edge (tap the tab to bring it back); **×** closes it for the flight (STD−60 page → Show the bubble). The ring empties as time runs out:
+  blue running, red in the last minute, amber on hold, green when complete. When a phase starts, the action card opens next to the bubble.
 
 ## New in 3.8.0
 - **STD−60** page (Preparation, after DASH): the departure timeline counted back from the STD of the flight. It starts by itself at STD−60;
