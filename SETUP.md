@@ -86,3 +86,6 @@ Preparation aid only – the OFP, official Emirates documentation and ATC prevai
 
 ## 3.9.0 (16 NOV 2026)
 - New GND (ground phase) item after DASH, aircraft-from-above icon. Two pages: Checklist (own cockpit flow cards: tick items with UTC time, Mark complete, Reset card, edit / add / delete cards, clear all ticks, restore defaults; cards kept on the iPad, ticks per flight) and OTP (the former STD−60 timeline). Old #turn links open GND · OTP.
+
+## 3.9.1 (16 NOV 2026)
+- Fix: checklist ticks are kept after a reload (default cards now have fixed ids and are saved at once).

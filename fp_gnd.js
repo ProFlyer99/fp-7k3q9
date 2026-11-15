@@ -1,4 +1,4 @@
-/* fp_gnd.js v1.0 (16 NOV 26) - GND (ground phase) area, pilot request 16 NOV 26:
+/* fp_gnd.js v1.1 (16 NOV 26) - GND (ground phase) area, pilot request 16 NOV 26:
    page 1 = Checklist: the pilot's own cockpit flow cards (tick each item, Mark complete; edit / add / delete cards),
    page 2 = OTP: the on-time performance STD timeline (fp_turn.js, from the flight file).
    The default cards are the pilot's own list (from his photo). Edited cards are kept on this iPad for every flight;
@@ -6,9 +6,9 @@
 window.FPGnd = (function () {
   'use strict';
   var DEF = [
-    { t: 'PRELIMINARY COCKPIT PREPARATION', i: ['AIRCRAFT SETUP', 'BATTERIES CHECK / EXTERNAL POWER', 'ELM', 'ADIRS', 'COCKPIT LIGHTS', 'EFB / FMS INITIALIZATION', 'ANF', 'AIRCRAFT ACCEPTANCE', 'FIRE TEST / APU START', 'OIS PREP & PERF PRELIM', 'BEFORE WALK AROUND ECAM PAGES'] },
-    { t: 'COCKPIT PREPARATION', i: ['OVERHEAD PANEL', 'CENTER INSTRUMENT PANEL', 'PEDESTAL', 'MFD ATC COM', 'MFD SURV', 'MFD FMS PREPARATION', 'GLARESHIELD', 'LATERAL CONSOLES', 'PF & PM INSTRUMENT PANELS', 'FUEL ON BOARD', 'DEPARTURE BRIEFING', 'COCKPIT PREPARATION CHECKLIST'] },
-    { t: 'BEFORE PUSH BACK / START CLEARANCE', i: ['LOADSHEET', 'TAKE OFF DATA', 'SEATING POSITION', 'AIR CONDITIONING UNITS', 'EXTERNAL POWER'] }
+    { id: 'prelim', t: 'PRELIMINARY COCKPIT PREPARATION', i: ['AIRCRAFT SETUP', 'BATTERIES CHECK / EXTERNAL POWER', 'ELM', 'ADIRS', 'COCKPIT LIGHTS', 'EFB / FMS INITIALIZATION', 'ANF', 'AIRCRAFT ACCEPTANCE', 'FIRE TEST / APU START', 'OIS PREP & PERF PRELIM', 'BEFORE WALK AROUND ECAM PAGES'] },
+    { id: 'cockpit', t: 'COCKPIT PREPARATION', i: ['OVERHEAD PANEL', 'CENTER INSTRUMENT PANEL', 'PEDESTAL', 'MFD ATC COM', 'MFD SURV', 'MFD FMS PREPARATION', 'GLARESHIELD', 'LATERAL CONSOLES', 'PF & PM INSTRUMENT PANELS', 'FUEL ON BOARD', 'DEPARTURE BRIEFING', 'COCKPIT PREPARATION CHECKLIST'] },
+    { id: 'push', t: 'BEFORE PUSH BACK / START CLEARANCE', i: ['LOADSHEET', 'TAKE OFF DATA', 'SEATING POSITION', 'AIR CONDITIONING UNITS', 'EXTERNAL POWER'] }
   ];
   var LK = 'fp.gnd.lists', el = null, tabsEl = null, chk = null, otp = null, fid = 'x', st = null, L = null, edit = -1, delArm = -1, delT = null, curTab = 'chk';
   function $(id) { return document.getElementById(id); }
@@ -16,7 +16,7 @@ window.FPGnd = (function () {
   function pad(n) { return String(n).padStart(2, '0'); }
   function zz(ms) { var d = new Date(ms); return pad(d.getUTCHours()) + pad(d.getUTCMinutes()) + 'Z'; }
   function toast(t, undo) { var C = window.FPCore; if (C && C.toast) C.toast(t, undo); }
-  function loadL() { try { L = JSON.parse(localStorage.getItem(LK) || 'null'); } catch (e) { L = null; } if (!Array.isArray(L)) L = JSON.parse(JSON.stringify(DEF)); L.forEach(function (c) { if (!c.id) c.id = 'c' + Math.random().toString(36).slice(2, 8); }); }
+  function loadL() { try { L = JSON.parse(localStorage.getItem(LK) || 'null'); } catch (e) { L = null; } var nw = !Array.isArray(L); if (nw) L = JSON.parse(JSON.stringify(DEF)); L.forEach(function (c) { if (!c.id) { c.id = 'c' + Math.random().toString(36).slice(2, 8); nw = true; } }); if (nw) saveL(); }   // v1.1: fixed ids, saved at once, so ticks survive a reload
   function saveL() { try { localStorage.setItem(LK, JSON.stringify(L)); } catch (e) { } }
   function loadS() { try { st = JSON.parse(localStorage.getItem('fp.gnd.' + fid) || 'null'); } catch (e) { st = null; } st = st || {}; st.tk = st.tk || {}; st.done = st.done || {}; }
   function saveS() { try { localStorage.setItem('fp.gnd.' + fid, JSON.stringify(st)); } catch (e) { } }
@@ -75,7 +75,7 @@ window.FPGnd = (function () {
       else { var bak = JSON.stringify(L); L.splice(k, 1); delArm = -1; saveL(); toast('Card deleted.', function () { L = JSON.parse(bak); saveL(); renderChk(); }); }
     } else if (g === 'add') { L.push({ id: 'c' + Date.now().toString(36), t: 'NEW CARD', i: [], nw: 1 }); edit = L.length - 1; }
     else if (g === 'clear') { var p2 = JSON.stringify(st); st = { tk: {}, done: {} }; saveS(); toast('All ticks cleared.', function () { st = JSON.parse(p2); saveS(); renderChk(); }); }
-    else if (g === 'def') { var b2 = JSON.stringify(L); L = JSON.parse(JSON.stringify(DEF)); L.forEach(function (x) { x.id = 'c' + Math.random().toString(36).slice(2, 8); }); saveL(); toast('Default cards restored.', function () { L = JSON.parse(b2); saveL(); renderChk(); }); }
+    else if (g === 'def') { var b2 = JSON.stringify(L); L = JSON.parse(JSON.stringify(DEF)); saveL(); toast('Default cards restored.', function () { L = JSON.parse(b2); saveL(); renderChk(); }); }
     renderChk();
     if (g === 'edit' || g === 'add') { var ta = chk.querySelector('.gedit .gti'); if (ta) { ta.focus(); if (g === 'add') ta.select(); } }
   }
