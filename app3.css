@@ -624,3 +624,11 @@ details.morech { margin: 10px 0; } details.morech > summary { min-height: 44px; 
 .gkpop .gcard { border: 0; border-radius: 0; }
 .gcard .gbox.gnext { background: rgba(0,190,255,.12); border-radius: 10px; outline: 2px solid var(--cyan); }
 .gcard .gbox.gnext::after { content: 'NEXT'; font-size: 11px; font-weight: 900; color: var(--cyan); margin-left: 6px; }
+
+/* 3.9.4 DEP / ARR briefing picture */
+.brf-tabs { display: flex; gap: 8px; margin: 4px 0 12px; flex-wrap: wrap; }
+.brf-tabs button { min-height: 44px; padding: 8px 18px; border-radius: 22px; border: 1px solid var(--line); background: var(--panel); color: var(--fg); font-weight: 700; font-size: 15px; }
+.brf-tabs button.on { background: var(--cyan); border-color: var(--cyan); color: #04121c; }
+.brf-card[hidden], .brf-pic[hidden] { display: none; }
+.brf-pic { overflow: auto; -webkit-overflow-scrolling: touch; touch-action: pan-x pan-y pinch-zoom; }
+.brf-pic img { display: block; width: 100%; max-width: 1400px; height: auto; margin: 0 auto; border-radius: 12px; border: 1px solid var(--line); }

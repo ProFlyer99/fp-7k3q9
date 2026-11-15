@@ -95,3 +95,6 @@ Preparation aid only – the OFP, official Emirates documentation and ATC prevai
 
 ## 3.9.3 (16 NOV 2026)
 - Sound alerts off now also silences the OTP alerts: no chime, and OTP notifications are sent silent.
+
+## 3.9.4 (16 NOV 2026)
+- DEP / ARR: Departure card | Departure briefing (and Arrival card | Arrival briefing) tabs. The briefing pictures come in the flight files (data.brief) and the iPad keeps the last ones (fp.brief.def); no pictures in the app code.

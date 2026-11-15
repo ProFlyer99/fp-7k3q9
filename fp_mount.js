@@ -38,6 +38,7 @@ window.FPMount = function (rec, opt) {
     var sec = $('v-' + k); if (!sec) return false;
     if (pending[k]) { sec.innerHTML = prep(pending[k]); delete pending[k]; sec.removeAttribute('data-lazy'); mounted[k] = 1; if (window.FPRefs) window.FPRefs.scan(sec); }
     if (window.FPImg) window.FPImg.hydrate(sec);
+    if (window.FPBrief) window.FPBrief.inject(k);   // v3.9.4: briefing picture tab on DEP / ARR
     return true;
   };
   M.ensureAll = function () { Object.keys(pending).forEach(M.ensure); };
@@ -70,6 +71,7 @@ window.FPMount = function (rec, opt) {
   document.querySelectorAll('.view:not([data-lazy])').forEach(function (s) { if (window.FPImg) window.FPImg.hydrate(s); if (window.FPRefs) window.FPRefs.scan(s); });
   window.FPLive(rec.data);
   if (window.FPGnd && $('gnd')) window.FPGnd.init(window.FPRec);   // v3.9
+  if (window.FPBrief) window.FPBrief.init(rec.data);   // v3.9.4
   if (window.FPTurn && $('turn')) window.FPTurn.init(rec.data);   // v3.8
 };
 
