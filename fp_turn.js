@@ -1,4 +1,4 @@
-/* fp_turn.js v1.1 (15 NOV 26) - STD TIMELINE page: a departure timeline counted from STD, run as live timers.
+/* fp_turn.js v1.2 (15 NOV 26) - STD TIMELINE page: a departure timeline counted from STD, run as live timers.
    The phases, their wording and the reference are read from the loaded flight file (data.turn) - this file holds no company text.
    - Starts by itself at the first phase on the flight's date (STD and date from the loaded flight; the pilot can type a new STD for a delay).
    - When a phase starts: chime + a phase card on screen (+ an iOS / browser notification when allowed) with Acknowledge / Hold / Complete.
@@ -27,7 +27,16 @@ window.FPTurn = (function () {
   function save() { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) { } }
   function isDxb() { return (D.flight && (D.flight.dep === 'OMDB' || D.flight.dep_iata === 'DXB')); }
   /* STD on the flight's date, as epoch ms (a typed new STD wins; a time well before the planned one rolls to the next day) */
+  /* v1.2 (pilot 15 NOV 26): a STD typed by hand is the next time that clock time comes up from now (up to 3 h back = a delay already running),
+     whatever the date of the loaded flight. Stored as an absolute time so it never jumps. */
+  function nextOcc(hh, mm) {
+    var n = new Date(), t = Date.UTC(n.getUTCFullYear(), n.getUTCMonth(), n.getUTCDate(), hh, mm);
+    while (t < Date.now() - 3 * 3600000) t += 86400000;
+    while (t > Date.now() + 21 * 3600000) t -= 86400000;
+    return t;
+  }
   function stdMs() {
+    if (st.stdAbs && isFinite(+st.stdAbs)) return +st.stdAbs;
     var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(D.date || ''); if (!m) return null;
     var s = st.std || (D.flight && D.flight.std) || ''; var sm = /^(\d{1,2}):?(\d{2})$/.exec(s); if (!sm) return null;
     var base = Date.UTC(+m[1], +m[2] - 1, +m[3]), t = base + (+sm[1] * 60 + +sm[2]) * 60000;
@@ -196,13 +205,13 @@ window.FPTurn = (function () {
   }
   function stdForm() {
     var s = (D.flight && D.flight.std) || '';
-    return '<div class="tstd"><small>STD from the flight: <b>' + esc(s.replace(':', '')) + 'Z</b>' + (st.std ? ' · new STD in use: <b>' + esc(st.std.replace(':', '')) + 'Z</b>' : '') + '</small>' +
+    return '<div class="tstd"><small>STD from the flight: <b>' + esc(s.replace(':', '')) + 'Z</b>' + (st.std ? ' · new STD in use: <b>' + esc(st.std.replace(':', '')) + 'Z' + (st.stdAbs ? ' ' + new Date(+st.stdAbs).toISOString().slice(8, 10) + ' ' + ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'][new Date(+st.stdAbs).getUTCMonth()] : '') + '</b> (timeline from 1 h before)' : '') + '</small>' +
       '<label>New STD <input id="turn-std" inputmode="numeric" maxlength="4" placeholder="HHMM" autocomplete="off" value="' + esc(st.std ? st.std.replace(':', '') : '') + '"><i>Z</i></label>' +
       '<button type="button" id="turn-std-set">Set</button>' + (st.std ? '<button type="button" id="turn-std-clr">Use OFP STD</button>' : '') + '</div>';
   }
   function bindForm() {
-    var b = $('turn-std-set'); if (b) b.onclick = function () { var v = ($('turn-std').value || '').replace(/\D/g, ''); if (!/^\d{4}$/.test(v) || +v.slice(0, 2) > 23 || +v.slice(2) > 59) { if (C && C.toast) C.toast('Type the STD as HHMM (UTC).'); return; } st.std = v.slice(0, 2) + ':' + v.slice(2); st.fired = {}; save(); closeCard(); render(); };
-    var c = $('turn-std-clr'); if (c) c.onclick = function () { delete st.std; st.fired = {}; save(); closeCard(); render(); };
+    var b = $('turn-std-set'); if (b) b.onclick = function () { var v = ($('turn-std').value || '').replace(/\D/g, ''); if (!/^\d{4}$/.test(v) || +v.slice(0, 2) > 23 || +v.slice(2) > 59) { if (C && C.toast) C.toast('Type the STD as HHMM (UTC).'); return; } st.std = v.slice(0, 2) + ':' + v.slice(2); st.stdAbs = nextOcc(+v.slice(0, 2), +v.slice(2)); st.fired = {}; save(); closeCard(); paintBub(); render(); };
+    var c = $('turn-std-clr'); if (c) c.onclick = function () { delete st.std; delete st.stdAbs; st.fired = {}; save(); closeCard(); paintBub(); render(); };
     var tt = $('turn-test'); if (tt) tt.onclick = function () { chime(2); openCard(0, false); notify(0, false); };
     var pp = $('turn-perm'); if (pp) pp.onclick = function () { try { var r = Notification.requestPermission(function () { render(); }); if (r && r.then) r.then(function () { render(); }); } catch (e) { } };
     var bo = $('turn-bub-on'); if (bo) bo.onclick = function () { st.bub = 'on'; save(); paintBub(); render(); };

@@ -69,3 +69,6 @@ Old files you can delete from the repository (no longer used): `wx.yml`, `wx_fet
 - A flight file that already carries library content is no longer given it a second time.
 
 Preparation aid only – the OFP, official Emirates documentation and ATC prevail.
+
+## 3.8.3 (15 NOV 2026)
+- STD timeline: a STD typed by hand is the next time that clock time comes up (or up to 3 h ago = a delay already running), whatever the date of the loaded flight. Timeline starts 1 h before it. "Use OFP STD" goes back to the flight's own STD.
