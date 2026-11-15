@@ -608,3 +608,19 @@ details.morech { margin: 10px 0; } details.morech > summary { min-height: 44px; 
 .gcard .gbar button, .gfoot button { min-height: 44px; padding: 8px 16px; border-radius: 12px; border: 1px solid var(--line); background: var(--panel); color: var(--fg); font-weight: 700; }
 .gcard .gbar button.pri { background: var(--cyan); border-color: var(--cyan); color: #04121c; }
 .gfoot { margin-top: 16px; }
+
+/* 3.9.2 checklist line under the OTP bubble + checklist pop-up */
+.tbub .tbchk { min-height: 34px; padding: 5px 11px; border-radius: 9px; border: 1px solid var(--cyan); background: var(--panel); color: var(--cyan); font-size: 12.5px; font-weight: 800; line-height: 1.2; text-align: center; white-space: normal; max-width: 230px; box-shadow: 0 3px 10px rgba(0,0,0,.18); cursor: pointer; }
+.tbub .tbchk.ok { border-color: var(--grn); color: var(--grn); }
+.tbub .tbchk[hidden] { display: none; }
+.gkpop { position: fixed; z-index: 8995; width: min(380px, calc(100vw - 16px)); max-height: calc(100vh - 16px); overflow: auto; border-radius: 16px; border: 1px solid var(--cyan); background: var(--panel); box-shadow: 0 10px 34px rgba(0,0,0,.45); }
+.gkpop[hidden] { display: none; }
+.gkpop .gkh { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: var(--panel); border-bottom: 1px solid var(--line); cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; }
+.gkpop.drag .gkh { cursor: grabbing; }
+.gkpop .gkhg { color: var(--muted); font-size: 18px; }
+.gkpop .gkh b { flex: 1; font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+.gkpop .gkl, .gkpop .gkx { min-height: 36px; min-width: 36px; padding: 0 10px; border-radius: 10px; border: 1px solid var(--line); background: transparent; color: var(--fg); font-weight: 700; }
+.gkpop .gkx { font-size: 20px; padding: 0; }
+.gkpop .gcard { border: 0; border-radius: 0; }
+.gcard .gbox.gnext { background: rgba(0,190,255,.12); border-radius: 10px; outline: 2px solid var(--cyan); }
+.gcard .gbox.gnext::after { content: 'NEXT'; font-size: 11px; font-weight: 900; color: var(--cyan); margin-left: 6px; }

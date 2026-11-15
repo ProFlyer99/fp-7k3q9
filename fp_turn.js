@@ -1,4 +1,4 @@
-/* fp_turn.js v1.4 (15 NOV 26) - STD TIMELINE page: a departure timeline counted from STD, run as live timers.
+/* fp_turn.js v1.5 (15 NOV 26) - STD TIMELINE page: a departure timeline counted from STD, run as live timers.
    The phases, their wording and the reference are read from the loaded flight file (data.turn) - this file holds no company text.
    - Starts by itself at the first phase on the flight's date (STD and date from the loaded flight; the pilot can type a new STD for a delay).
    - When a phase starts: chime + a phase card on screen (+ an iOS / browser notification when allowed) with Acknowledge / Hold / Complete.
@@ -96,15 +96,17 @@ window.FPTurn = (function () {
     bub = document.createElement('div'); bub.id = 'turn-bub'; bub.className = 'tbub'; bub.hidden = true;
     bub.innerHTML = '<button type="button" class="tbc tbmin" aria-label="Hide the timeline bubble">−</button><button type="button" class="tbc tbx" aria-label="Close the timeline bubble">×</button>' +
       '<div class="tbr"><svg viewBox="0 0 112 112" aria-hidden="true"><circle cx="56" cy="56" r="51" class="tbtrack"/><circle cx="56" cy="56" r="51" class="tbarc" transform="rotate(-90 56 56)"/></svg>' +
-      '<span class="tbp"></span><b class="tbcd"></b><small class="tbex"></small></div><div class="tbt"></div>';
+      '<span class="tbp"></span><b class="tbcd"></b><small class="tbex"></small></div><div class="tbt"></div><button type="button" class="tbchk" hidden></button>';
     document.body.appendChild(bub);
     tab = document.createElement('button'); tab.type = 'button'; tab.id = 'turn-tab'; tab.className = 'ttab'; tab.hidden = true; tab.setAttribute('aria-label', 'Show the timeline bubble');
     document.body.appendChild(tab);
     tab.addEventListener('click', function () { st.bub = 'on'; save(); paintBub(); });
     bub.querySelector('.tbmin').addEventListener('click', function (ev) { ev.stopPropagation(); st.bub = 'hidden'; save(); if (card && card.classList.contains('tanch')) closeCard(); paintBub(); render(); });
+    bub.querySelector('.tbchk').addEventListener('click', function (ev) { ev.stopPropagation(); var g = window.FPGnd, c = g && g.current(); if (g) g.open(c ? c.k : -1); });   // v1.5: checklist line -> pop-up of that card
+    if (window.FPGnd && window.FPGnd.onChange) window.FPGnd.onChange(function () { paintChk(); });
     bub.querySelector('.tbx').addEventListener('click', function (ev) { ev.stopPropagation(); st.bub = 'closed'; st.bubPh = curIdx(now()); save(); if (card && card.classList.contains('tanch')) closeCard(); paintBub(); render(); });
     var drag = null, moved = false;
-    bub.addEventListener('pointerdown', function (e) { if (e.target.closest('.tbc')) return; drag = { dx: e.clientX - bub.offsetLeft, dy: e.clientY - bub.offsetTop, x0: e.clientX, y0: e.clientY }; moved = false; try { bub.setPointerCapture(e.pointerId); } catch (x) { } bub.classList.add('drag'); });
+    bub.addEventListener('pointerdown', function (e) { if (e.target.closest('.tbc') || e.target.closest('.tbchk')) return; drag = { dx: e.clientX - bub.offsetLeft, dy: e.clientY - bub.offsetTop, x0: e.clientX, y0: e.clientY }; moved = false; try { bub.setPointerCapture(e.pointerId); } catch (x) { } bub.classList.add('drag'); });
     bub.addEventListener('pointermove', function (e) {
       if (!drag) return; if (Math.abs(e.clientX - drag.x0) + Math.abs(e.clientY - drag.y0) > 6) moved = true; if (!moved) return;
       var W = window.innerWidth, H = window.innerHeight, x = Math.max(4, Math.min(W - bub.offsetWidth - 4, e.clientX - drag.dx)), y = Math.max(4, Math.min(H - bub.offsetHeight - 4, e.clientY - drag.dy));
@@ -119,6 +121,12 @@ window.FPTurn = (function () {
     bub.addEventListener('pointerup', up); bub.addEventListener('pointercancel', up);
     window.addEventListener('resize', function () { applyPos(); placeCard(); });
     loadPos();
+  }
+  function paintChk() {   // v1.5 (pilot 16 NOV 26): under the OTP bubble, the checklist card in progress and its count; no due time
+    if (!bub) return; var x = bub.querySelector('.tbchk'), g = window.FPGnd, c = g && g.current && g.current();
+    if (!x) return; if (!c) { x.hidden = true; return; }
+    x.hidden = false; var t = c.all ? 'Checklist ✓ all complete' : c.t + '  ' + c.n + ' / ' + c.tot;
+    if (x.textContent !== t) x.textContent = t; x.classList.toggle('ok', !!c.all);
   }
   function paintBub() {
     if (!D || !PH.length) return; ensureBub();
@@ -139,6 +147,7 @@ window.FPTurn = (function () {
     if (!tab.firstChild) tab.innerHTML = '<b></b><small></small>';   // v1.3: fixed nodes so a tap is never swallowed by the repaint
     tab.children[0].textContent = (last ? '+' : '') + mmss(Math.max(0, rem)); tab.children[1].textContent = lab(p);
     tab.className = 'ttab ' + cls;
+    paintChk();
     if (wasHidden && !bub.hidden) applyPos();
   }
   /* the action card sits next to the bubble when the bubble is on screen; otherwise it is the centred card */

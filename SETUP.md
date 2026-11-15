@@ -89,3 +89,6 @@ Preparation aid only – the OFP, official Emirates documentation and ATC prevai
 
 ## 3.9.1 (16 NOV 2026)
 - Fix: checklist ticks are kept after a reload (default cards now have fixed ids and are saved at once).
+
+## 3.9.2 (16 NOV 2026)
+- OTP bubble: under the time, the checklist card in progress and its count (no due time). Tap it = draggable pop-up of that card (NEXT item highlighted, tick, Mark complete, All cards). Last item ticked: the pop-up and the line move on to the next card. Pop-up fits the screen and remembers its position.
