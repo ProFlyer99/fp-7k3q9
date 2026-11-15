@@ -26,6 +26,8 @@ window.FPMount = function (rec, opt) {
   var D = rec.data || {};
   var hasWx = !!((D.wx && D.wx.length) || (D.notams && D.notams.length) || (D.rnotams && D.rnotams.length));
   if (hasWx && !rec.views.wxnotam) sv += '<section id="v-wxnotam" class="view" data-view="wxnotam" hidden><div id="wxnt"></div></section>';
+  /* v3.8.2: the timeline wording comes in Claude's flight files; the iPad keeps the last one, so a flight built from an OFP alone gets it too (with its own STD) */
+  try { if (D.turn && D.turn.phases && D.turn.phases.length) localStorage.setItem('fp.turn.def', JSON.stringify(D.turn)); else { var tdef = JSON.parse(localStorage.getItem('fp.turn.def') || 'null'); if (tdef && tdef.phases && tdef.phases.length) D.turn = tdef; } } catch (e) { }
   if (D.flight && D.flight.std && D.turn && D.turn.phases && D.turn.phases.length) sv += '<section id="v-turn" class="view" data-view="turn" hidden><div id="turn"></div></section>';   // v3.8: STD timeline (phases from the flight file)
   if (opt.app) sv += '<section id="v-regs" class="view" data-view="regs" hidden><div id="regs"></div></section>';   // v3: regulations library (app only)
   var ph = $('static-views'); if (ph) ph.outerHTML = sv;
