@@ -148,7 +148,8 @@ window.FPTools = function (A) {
       TTAB.addEventListener('click', function () { bubList().forEach(function (x) { if (x.mode === 'hidden') setMode(x.id, 'on'); }); }); document.body.appendChild(TTAB); }
     TTAB.hidden = !hid.length;
     if (hid.length) { hid.sort(function (a, b) { return a.l - b.l; }); var h0 = hid[0];
-      TTAB.innerHTML = '<b>' + esc(h0.l > 0 ? A.mmss(h0.l) : 'DUE') + '</b><small>' + esc(h0.n) + '</small>' + (hid.length > 1 ? '<small>+' + (hid.length - 1) + ' more</small>' : '');
+      if (!TTAB.firstChild) TTAB.innerHTML = '<b></b><small></small><small></small>';   // fixed nodes: rewriting them every second would swallow a tap
+      var tk = TTAB.children; tk[0].textContent = h0.l > 0 ? A.mmss(h0.l) : 'DUE'; tk[1].textContent = h0.n; tk[2].textContent = hid.length > 1 ? '+' + (hid.length - 1) + ' more' : ''; tk[2].hidden = hid.length < 2;
       TTAB.className = 'ttab tmtab ' + (h0.l <= 0 ? 'late' : (h0.l <= h0.amb ? 'hold' : '')); }
   }
   window.addEventListener('resize', function () { var i = 0; Object.keys(TB).forEach(function (k) { if (!TB[k].hidden) tbPlace(TB[k], k, i++); }); });

@@ -1,4 +1,4 @@
-/* fp_turn.js v1.2 (15 NOV 26) - STD TIMELINE page: a departure timeline counted from STD, run as live timers.
+/* fp_turn.js v1.3 (15 NOV 26) - STD TIMELINE page: a departure timeline counted from STD, run as live timers.
    The phases, their wording and the reference are read from the loaded flight file (data.turn) - this file holds no company text.
    - Starts by itself at the first phase on the flight's date (STD and date from the loaded flight; the pilot can type a new STD for a delay).
    - When a phase starts: chime + a phase card on screen (+ an iOS / browser notification when allowed) with Acknowledge / Hold / Complete.
@@ -132,7 +132,8 @@ window.FPTurn = (function () {
     bub.querySelector('.tbex').textContent = ex;
     var C2 = 2 * Math.PI * 51, arc = bub.querySelector('.tbarc'); arc.style.strokeDasharray = C2.toFixed(1); arc.style.strokeDashoffset = (len ? C2 * (1 - Math.max(0, Math.min(1, rem / len))) : 0).toFixed(1);
     bub.querySelector('.tbt').textContent = p[2] + (sx ? ' · ' + ({ ack: 'ACK', hold: 'HOLD', done: 'DONE' })[sx] : '');   // the full title, never shortened
-    tab.innerHTML = '<b>' + esc((last ? '+' : '') + mmss(Math.max(0, rem))) + '</b><small>' + esc(lab(p)) + '</small>';
+    if (!tab.firstChild) tab.innerHTML = '<b></b><small></small>';   // v1.3: fixed nodes so a tap is never swallowed by the repaint
+    tab.children[0].textContent = (last ? '+' : '') + mmss(Math.max(0, rem)); tab.children[1].textContent = lab(p);
     tab.className = 'ttab ' + cls;
     if (wasHidden && !bub.hidden) applyPos();
   }

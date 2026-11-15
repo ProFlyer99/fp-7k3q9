@@ -573,3 +573,4 @@ details.morech { margin: 10px 0; } details.morech > summary { min-height: 44px; 
 .tbub.tmbub .tbcd { font-size: 22px; }
 .ttab.tmtab { top: 58%; max-width: 150px; }
 .ttab.tmtab small { text-align: center; white-space: normal; overflow-wrap: anywhere; }
+.tbub.tmbub.late .tbcd { font-size: 16px; white-space: nowrap; }
