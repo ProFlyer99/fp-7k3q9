@@ -1,4 +1,4 @@
-/* fp_turn.js v1.3 (15 NOV 26) - STD TIMELINE page: a departure timeline counted from STD, run as live timers.
+/* fp_turn.js v1.4 (15 NOV 26) - STD TIMELINE page: a departure timeline counted from STD, run as live timers.
    The phases, their wording and the reference are read from the loaded flight file (data.turn) - this file holds no company text.
    - Starts by itself at the first phase on the flight's date (STD and date from the loaded flight; the pilot can type a new STD for a delay).
    - When a phase starts: chime + a phase card on screen (+ an iOS / browser notification when allowed) with Acknowledge / Hold / Complete.
@@ -75,7 +75,11 @@ window.FPTurn = (function () {
   function closeCard() { if (card) card.hidden = true; cardFor = null; }
   /* ---------- v1.1 floating bubble (pilot request 15 NOV 26): current phase, countdown, UTC expiry, full title; drag anywhere; − hides to an edge tab; × closes */
   var bub = null, tab = null, POSK = 'fp.turn.bubpos', pos = null;
-  function bubMode() { return (st && st.bub) || 'on'; }   // on | hidden | closed (per flight)
+  function bubMode() {   // on | hidden | closed. v1.4 (pilot 16 NOV 26): × closes it for the current phase only; the next phase brings it back
+    var m = (st && st.bub) || 'on';
+    if (m === 'closed' && st.bubPh != null && curIdx(now()) !== st.bubPh) { st.bub = 'on'; delete st.bubPh; save(); m = 'on'; }
+    return m;
+  }
   function inWindow(t) { if (!PH.length || stdMs() == null) return false; return t >= phaseAt(0) && t <= phaseAt(PH.length - 1) + 15 * 60000; }
   function curIdx(t) { var c = -1; for (var i = 0; i < PH.length; i++) if (t >= phaseAt(i)) c = i; return c; }
   function lab(p) { return 'STD' + (p[1] < 0 ? ' −' + (-p[1]) : p[1] > 0 ? ' +' + p[1] : ''); }
@@ -98,7 +102,7 @@ window.FPTurn = (function () {
     document.body.appendChild(tab);
     tab.addEventListener('click', function () { st.bub = 'on'; save(); paintBub(); });
     bub.querySelector('.tbmin').addEventListener('click', function (ev) { ev.stopPropagation(); st.bub = 'hidden'; save(); if (card && card.classList.contains('tanch')) closeCard(); paintBub(); render(); });
-    bub.querySelector('.tbx').addEventListener('click', function (ev) { ev.stopPropagation(); st.bub = 'closed'; save(); if (card && card.classList.contains('tanch')) closeCard(); paintBub(); render(); });
+    bub.querySelector('.tbx').addEventListener('click', function (ev) { ev.stopPropagation(); st.bub = 'closed'; st.bubPh = curIdx(now()); save(); if (card && card.classList.contains('tanch')) closeCard(); paintBub(); render(); });
     var drag = null, moved = false;
     bub.addEventListener('pointerdown', function (e) { if (e.target.closest('.tbc')) return; drag = { dx: e.clientX - bub.offsetLeft, dy: e.clientY - bub.offsetTop, x0: e.clientX, y0: e.clientY }; moved = false; try { bub.setPointerCapture(e.pointerId); } catch (x) { } bub.classList.add('drag'); });
     bub.addEventListener('pointermove', function (e) {

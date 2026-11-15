@@ -80,3 +80,6 @@ Preparation aid only – the OFP, official Emirates documentation and ATC prevai
 ## 3.8.5 (15 NOV 2026)
 - Fix: tapping the edge tab (timer bubbles and STD timeline) always brings the bubble back (the tab no longer redraws its nodes every second).
 - DUE text fits inside the timer bubble.
+
+## 3.8.6 (16 NOV 2026)
+- STD timeline: × closes the bubble for the current phase only; every next phase brings the bubble back with its card next to it.
