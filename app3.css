@@ -668,3 +668,17 @@ html.wxc-lock, html.wxc-lock body { overflow: hidden; }
 .wxc-top button.on { background: #0aa3d8; border-color: #0aa3d8; color: #04121c; }
 .wxc-top button.arm { background: #d63a3a; border-color: #d63a3a; }
 .wxc-ov.drawing .wxc-vp { cursor: crosshair; }
+/* 3.9.6 charts: overview grid, names, eraser */
+.wxc-mode { display: flex; gap: 8px; margin: 6px 0 4px; }
+.wxc-mode button { min-height: 44px; padding: 6px 16px; border-radius: 12px; border: 1px solid var(--line); background: var(--panel); color: var(--fg); font-weight: 800; }
+.wxc-mode button.on { background: var(--cyan); border-color: var(--cyan); color: #04121c; }
+.wxc-page.as-grid .wxc-list { display: none; } .wxc-page:not(.as-grid) .wxc-grid { display: none; }
+.wxc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; margin-top: 10px; }
+.wxc-card { display: flex; flex-direction: column; gap: 6px; padding: 8px; border-radius: 12px; border: 1px solid var(--line); background: var(--panel); color: var(--fg); text-align: left; cursor: zoom-in; }
+.wxc-card.ink { border-color: #e5262d; }
+.wxc-th { position: relative; display: block; aspect-ratio: 1.38; background: #fff; border-radius: 8px; overflow: hidden; }
+.wxc-th img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.wxc-th svg.wxc-ink { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.wxc-card b { font-size: 14px; line-height: 1.25; }
+.wxc-card small { font-size: 12px; color: var(--muted); }
+.wxc-card .wxc-inkb { color: #e5262d; font-style: normal; font-weight: 800; }

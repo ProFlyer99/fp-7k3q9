@@ -102,3 +102,6 @@ Preparation aid only – the OFP, official Emirates documentation and ATC prevai
 ## 3.9.5 (16 NOV 2026)
 - WX·NOTAM: Weather & NOTAM | OFP weather charts tabs. Every picture page of the OFP in OFP order (data.wxcharts in the flight file, added by tool2/add_wxcharts.py); number buttons; full-screen viewer with pinch / double-tap zoom, pan, swipe / ‹ ›.
 - Drawing on the charts: ✎ Draw, red / blue pen, yellow highlighter, Undo, Clear; kept per flight on the iPad (fp.wxd.<flight id>); shown in the list too.
+
+## 3.9.6 (16 NOV 2026)
+- OFP weather charts: chart names (read from the chart when the flight file is built, data.wxcharts[].title), overview grid (default) | full-size list, ✎ marked badge on cards, ⌫ eraser for single marks.
