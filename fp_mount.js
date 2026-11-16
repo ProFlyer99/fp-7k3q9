@@ -72,6 +72,7 @@ window.FPMount = function (rec, opt) {
   window.FPLive(rec.data);
   if (window.FPGnd && $('gnd')) window.FPGnd.init(window.FPRec);   // v3.9
   if (window.FPBrief) window.FPBrief.init(rec.data);   // v3.9.4
+  if (window.FPWxc) window.FPWxc.init(rec.data);   // v3.9.5: OFP weather charts tab on WX·NOTAM
   if (window.FPTurn && $('turn')) window.FPTurn.init(rec.data);   // v3.8
 };
 

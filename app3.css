@@ -632,3 +632,39 @@ details.morech { margin: 10px 0; } details.morech > summary { min-height: 44px; 
 .brf-card[hidden], .brf-pic[hidden] { display: none; }
 .brf-pic { overflow: auto; -webkit-overflow-scrolling: touch; touch-action: pan-x pan-y pinch-zoom; }
 .brf-pic img { display: block; width: 100%; max-width: 1400px; height: auto; margin: 0 auto; border-radius: 12px; border: 1px solid var(--line); }
+
+/* 3.9.5 WX·NOTAM - OFP weather charts */
+.wxc-main[hidden], .wxc-page[hidden] { display: none; }
+.wxc-jump { position: sticky; top: 0; z-index: 2; display: flex; gap: 6px; flex-wrap: wrap; padding: 8px 0; background: var(--bg); }
+.wxc-jump button { min-height: 44px; min-width: 48px; padding: 4px 8px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel); color: var(--fg); font-weight: 800; font-size: 15px; line-height: 1.1; }
+.wxc-jump button small { display: block; font-size: 10.5px; font-weight: 600; color: var(--muted); }
+.wxc-fig { margin: 14px 0 22px; scroll-margin-top: 70px; }
+.wxc-fig figcaption { font-size: 13px; font-weight: 800; color: var(--muted); margin-bottom: 6px; letter-spacing: .03em; }
+.wxc-fig img { display: block; width: 100%; max-width: 1500px; height: auto; border-radius: 10px; border: 1px solid var(--line); background: #fff; cursor: zoom-in; }
+.wxc-ov { position: fixed; inset: 0; z-index: 9500; background: #0b0f16; display: flex; flex-direction: column; }
+.wxc-ov[hidden] { display: none; }
+.wxc-top { display: flex; align-items: center; gap: 8px; padding: calc(8px + env(safe-area-inset-top)) 12px 8px; color: #fff; }
+.wxc-top b { flex: 1; font-size: 15px; }
+.wxc-top button { min-height: 44px; min-width: 44px; padding: 0 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,.25); background: rgba(255,255,255,.08); color: #fff; font-weight: 800; font-size: 16px; }
+.wxc-vp { position: relative; flex: 1; overflow: hidden; touch-action: none; background: #fff; }
+.wxc-vp img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: contain; transform-origin: 0 0; user-select: none; -webkit-user-drag: none; }
+.wxc-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 52px; height: 72px; border-radius: 14px; border: 1px solid rgba(0,0,0,.2); background: rgba(10,15,25,.65); color: #fff; font-size: 34px; font-weight: 700; }
+.wxc-prev { left: 10px; } .wxc-next { right: 10px; }
+.wxc-nav:disabled { opacity: .25; }
+html.wxc-lock, html.wxc-lock body { overflow: hidden; }
+/* 3.9.5 chart drawing */
+.wxc-iw { position: relative; }
+.wxc-iw svg.wxc-ink { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.wxc-jump button.ink { border-color: #e5262d; }
+.wxc-jump button.ink::after { content: '✎'; font-size: 10px; color: #e5262d; margin-left: 2px; }
+.wxc-stage { position: absolute; inset: 0; transform-origin: 0 0; }
+.wxc-stage img { transform: none !important; }
+.wxc-stage svg.wxc-ink { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.wxc-top { flex-wrap: wrap; }
+.wxc-tools { display: inline-flex; gap: 6px; flex-wrap: wrap; }
+.wxc-tools[hidden] { display: none; }
+.wxc-tools button { display: inline-flex; align-items: center; gap: 6px; }
+.wxc-tools button i { width: 14px; height: 14px; border-radius: 50%; display: inline-block; }
+.wxc-top button.on { background: #0aa3d8; border-color: #0aa3d8; color: #04121c; }
+.wxc-top button.arm { background: #d63a3a; border-color: #d63a3a; }
+.wxc-ov.drawing .wxc-vp { cursor: crosshair; }
