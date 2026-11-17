@@ -98,14 +98,14 @@ window.FPWxNt = function (X) {
       '<span class="wtnm">' + esc(nameOf(a.icao) || ' ') + '</span>' +
       (a.role === 'ENR' && cov ? '<span class="wtcv">1 h cover ' + esc(hm(cov.a)) + '–' + esc(hm(cov.b)) + '</span>' : '') +
       '<span class="wtw s' + (ws == null ? 'n' : ws) + '"><i></i>WX ' + (ws == null ? 'no TAF' : SVN[ws]) + (anyT ? ' <small class="wtany">whole TAF</small>' : '') + (a.w && a.w.taf_live ? ' <em>live</em>' : '') + '</span>' +
-      '<span class="wtn s' + (act_.length ? worst : 'n') + '"><i></i>NOTAM ' + act_.length + (nn ? ' · ' + nn + ' new/short' : '') + '</span></button>';
+      '<span class="wtn s' + (act_.length ? worst : 'n') + '"><i></i>NOTAM ' + act_.length + (nn ? ' · ' + nn + ' new/short' : '') + '</span>' + (a.w && window.FPCold ? window.FPCold.badge(a.w) : '') + '</button>';
   }
   function tiles(list, act_name) { return list.length ? '<div class="wtiles">' + list.map(function (a) { return tile(a, act_name); }).join('') + '</div>' : ''; }
   /* ---------- weather cards */
   function wxCard(w) {
     var fo = W.focus(w), sv = wxSev(w), op = ST.open['wx:' + w.icao];
     return '<details class="wnwx s' + (sv == null ? 'n' : sv) + '" data-wx="' + esc(w.icao) + '"' + (op ? ' open' : '') + '><summary><b>' + esc(w.icao) + '</b> <span class="wxnm">' + esc(w.name || '') + '</span><span class="tag">' + esc(w.role) + '</span>' +
-      '<span class="wxsv s' + (sv == null ? 'n' : sv) + '">' + (sv == null ? 'no TAF' : SVN[sv]) + '</span><small>' + esc(fo.lab) + '</small></summary>' +
+      '<span class="wxsv s' + (sv == null ? 'n' : sv) + '">' + (sv == null ? 'no TAF' : SVN[sv]) + '</span>' + (window.FPCold ? window.FPCold.badge(w) : '') + '<small>' + esc(fo.lab) + '</small></summary>' +
       (w.groups ? (w.taf_live ? '<p class="wxsrc">Timeline from the <b>live TAF</b> ' + esc(w.live_taf_t || '') + ' – the OFP TAF is below, unchanged.</p>' : '') + W.tafSvg(w, fo) + W.atTxt(w, fo.at) + (fo.at2 ? W.atTxt(w, fo.at2) : '') : '<p class="note">' + esc(w.taf || 'No TAF in the OFP.') + (window.FPOnline ? ' Tap <b>Update weather</b> at the top while you have internet.' : '') + '</p>') +
       (w.live_metar ? '<code class="wxraw live"><b>METAR LIVE ' + esc(w.live_metar_t || '') + '</b> ' + esc(w.live_metar) + '</code>' : '') +
       (w.live_taf ? '<code class="wxraw live"><b>TAF LIVE ' + esc(w.live_taf_t || '') + '</b> ' + esc(w.live_taf) + '</code>' : '') +

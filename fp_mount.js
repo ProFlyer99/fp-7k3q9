@@ -71,7 +71,8 @@ window.FPMount = function (rec, opt) {
   document.querySelectorAll('.view:not([data-lazy])').forEach(function (s) { if (window.FPImg) window.FPImg.hydrate(s); if (window.FPRefs) window.FPRefs.scan(s); });
   window.FPLive(rec.data);
   if (window.FPGnd && $('gnd')) window.FPGnd.init(window.FPRec);   // v3.9
-  if (window.FPBrief) window.FPBrief.init(rec.data);   // v3.9.4
+  if (window.FPCold) window.FPCold.init(rec.data);   // v3.10: cold weather / icing (library 'cold' + data.cold)
+  if (window.FPBrief) window.FPBrief.init(rec.data);   // v3.9.4 (+ ❄ Icing tab)
   if (window.FPWxc) window.FPWxc.init(rec.data);   // v3.9.5: OFP weather charts tab on WX·NOTAM
   if (window.FPTurn && $('turn')) window.FPTurn.init(rec.data);   // v3.8
 };

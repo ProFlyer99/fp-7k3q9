@@ -105,3 +105,12 @@ Preparation aid only – the OFP, official Emirates documentation and ATC prevai
 
 ## 3.9.6 (16 NOV 2026)
 - OFP weather charts: chart names (read from the chart when the flight file is built, data.wxcharts[].title), overview grid (default) | full-size list, ✎ marked badge on cards, ⌫ eraser for single marks.
+
+## 3.10.0 (17 NOV 2026) – cold weather / icing (PREVIEW, not released)
+- New fp_cold.js. DEP and ARR get a "❄ Icing" tab (through fp_brief.js v1.1, which also now hides the card's own section bar / briefed button on the other tabs). NOW gets an "Icing – in-flight procedure" card.
+- DEP: worksheet v2.0 (fillable, per flight and leg: fp.cold.ws.<id>.dep / .ret; HOT expiry + live countdown; "Start HOT timer bubbles" puts two timers in FPCore.S.timers), original sheet and the 10.3.1.3 flow in the full-screen pen viewer, OM-C 10.3 procedure, A350 actions, HOT tables (50 pictures + notes, Table 57, allowance tables 53-56), departure airport part.
+- ARR: cold weather arrival (OM-C 10.4.1 with a correction helper: next colder row, next higher column, extrapolation above 5000 ft) + the next departure's set (worksheet / procedure / A350 / HOT / airport).
+- Tab highlight from the OFP METAR / TAF: +3 °C or colder (METAR temp or TAF TN) or SN/SG/PL/GS/GR/IC/FZxx = amber dot; +10 °C or colder with moisture = blue dot.
+- fp_wxc.js v1.3: view(list, i, key) opens the same viewer (zoom + pen) for any pictures; ink per key.
+- Company content only in the 'cold' library file (fpapp.library.v1, kind 'cold', replaced whole) and in data.cold of the flight files (tool2/add_cold.py, airport html in deice/apt/).
+- fp_cold.js v1.1: icing conditions per FCOM GEN Definitions (OAT/TN ≤ +10 °C with cloud, fog/mist ≤ 1600 m, any precipitation, or freezing precipitation) on every airport with weather: badge on WX·NOTAM tiles and weather cards (FPCold.badge, works without the library) and on the DEP/ARR tab banner. Amber = also ≤ +3 °C or snow / freezing / ice precipitation.

@@ -1,4 +1,5 @@
-/* fp_wxc.js v1.2 (16 NOV 26) - + chart names (read from the chart by Claude), overview grid, eraser.
+/* fp_wxc.js v1.3 (17 NOV 26) - + view(list, i, key): the same full-screen viewer with pen for other pictures (icing worksheet, HOT tables).
+   v1.2 (16 NOV 26) - + chart names (read from the chart by Claude), overview grid, eraser.
    v1.1 - + finger drawing (pens / highlighter) on the charts, kept per flight on this iPad.
    v1.0 - WX·NOTAM: "OFP weather charts" tab (pilot request 16 NOV 26).
    Every picture page of the OFP (Lido SWC / SIGWX / cross-section / wind charts and the satellite pictures), in OFP order.
@@ -10,11 +11,13 @@ window.FPWxc = (function () {
   var draw = false, tool = 'red', TOOLS = { red: { c: '#e5262d', w: 4, o: 1 }, blue: { c: '#1f5fd6', w: 4, o: 1 }, hl: { c: '#ffd400', w: 24, o: .38 }, er: { c: '#000', w: 1, o: 0 } }, clrArm = false;
   function loadD() { try { DR = JSON.parse(localStorage.getItem(DK) || '{}') || {}; } catch (e) { DR = {}; } }
   function saveD() { try { localStorage.setItem(DK, JSON.stringify(DR)); } catch (e) { } }
+  var V = [], VD = {}, VK = '';
+  function saveV() { try { localStorage.setItem(VK, JSON.stringify(VD)); } catch (e) { } if (VD === DR) DR = VD; }
   function tt(c) { return c.title || 'Weather chart'; }
   function pathD(p) { return p.map(function (q, i) { return (i ? 'L' : 'M') + q[0].toFixed(1) + ' ' + q[1].toFixed(1); }).join(''); }
   function strokeEl(st) { var e = document.createElementNS(NS, 'path'), T = TOOLS[st.t] || TOOLS.red; e.setAttribute('d', pathD(st.p)); e.setAttribute('fill', 'none'); e.setAttribute('stroke', T.c);
     e.setAttribute('stroke-width', T.w); e.setAttribute('stroke-opacity', T.o); e.setAttribute('stroke-linecap', 'round'); e.setAttribute('stroke-linejoin', 'round'); if (st.t === 'hl') e.setAttribute('style', 'mix-blend-mode:multiply'); return e; }
-  function paintSvg(svg, c) { svg.setAttribute('viewBox', '0 0 ' + (c.w || 1200) + ' ' + (c.h || 860)); while (svg.firstChild) svg.removeChild(svg.firstChild); (DR[c.page] || []).forEach(function (st) { svg.appendChild(strokeEl(st)); }); }
+  function paintSvg(svg, c, dd) { svg.setAttribute('viewBox', '0 0 ' + (c.w || 1200) + ' ' + (c.h || 860)); while (svg.firstChild) svg.removeChild(svg.firstChild); ((dd || DR)[c.page] || []).forEach(function (st) { svg.appendChild(strokeEl(st)); }); }
   function mkSvg() { var v = document.createElementNS(NS, 'svg'); v.setAttribute('class', 'wxc-ink'); v.setAttribute('preserveAspectRatio', 'xMidYMid meet'); return v; }
   function paintList() { C.forEach(function (c, i) { var f = $('wxc-' + i); if (!f) return; var v = f.querySelector('svg.wxc-ink'); if (!v) { var w = f.querySelector('.wxc-iw'); v = mkSvg(); w.appendChild(v); } paintSvg(v, c);
       var has = !!(DR[c.page] && DR[c.page].length), j = document.querySelector('[data-wj="' + i + '"]'); if (j) j.classList.toggle('ink', has);
@@ -72,9 +75,9 @@ window.FPWxc = (function () {
     ov.addEventListener('click', function (e) { var b = e.target.closest('[data-wv]'); if (!b) return; var a = b.dataset.wv;
       if (a === 'x') close(); else if (a === 'fit') fit(); else if (a === 'prev') go(idx - 1); else if (a === 'next') go(idx + 1);
       else if (a === 'draw') setDraw(!draw);
-      else if (a === 'undo') { var L = DR[C[idx].page]; if (L && L.length) { L.pop(); if (!L.length) delete DR[C[idx].page]; saveD(); paintSvg(ink, C[idx]); } }
+      else if (a === 'undo') { var L = VD[V[idx].page]; if (L && L.length) { L.pop(); if (!L.length) delete VD[V[idx].page]; saveV(); paintSvg(ink, V[idx], VD); } }
       else if (a === 'clear') { if (!clrArm) { clrArm = true; b.textContent = 'Clear all?'; b.classList.add('arm'); setTimeout(function () { clrArm = false; b.textContent = 'Clear'; b.classList.remove('arm'); }, 3000); }
-        else { delete DR[C[idx].page]; saveD(); paintSvg(ink, C[idx]); clrArm = false; b.textContent = 'Clear'; b.classList.remove('arm'); } } });
+        else { delete VD[V[idx].page]; saveV(); paintSvg(ink, V[idx], VD); clrArm = false; b.textContent = 'Clear'; b.classList.remove('arm'); } } });
     ov.querySelector('.wxc-tools').addEventListener('click', function (e) { var b = e.target.closest('[data-wt2]'); if (b) { tool = b.dataset.wt2; markTool(); } });
     vp.addEventListener('pointerdown', function (e) { vp.setPointerCapture(e.pointerId); ptr[e.pointerId] = [e.clientX, e.clientY]; start = snap(); e.preventDefault();
       var n = Object.keys(ptr).length;
@@ -93,7 +96,7 @@ window.FPWxc = (function () {
     });
     function up(e) {
       if (erasing) { erasing = false; delete ptr[e.pointerId]; start = null; return; }
-      if (live) { if (live.p.length === 1) live.p.push([live.p[0][0] + .5, live.p[0][1] + .5]); var pgk = C[idx].page; (DR[pgk] = DR[pgk] || []).push(live); saveD(); live = liveEl = null; delete ptr[e.pointerId]; start = null; return; }
+      if (live) { if (live.p.length === 1) live.p.push([live.p[0][0] + .5, live.p[0][1] + .5]); var pgk = V[idx].page; (VD[pgk] = VD[pgk] || []).push(live); saveV(); live = liveEl = null; delete ptr[e.pointerId]; start = null; return; }
       var was = start; delete ptr[e.pointerId]; start = Object.keys(ptr).length ? snap() : null;
       if (draw && was && was.n === 1) { limits(); return; }   // no swipe / double-tap while drawing
       if (was && was.n === 1 && !start) {
@@ -115,17 +118,18 @@ window.FPWxc = (function () {
   function fit() { s = 1; tx = 0; ty = 0; apply(true); }
   function toImg(e) { var m = ink.getScreenCTM(); if (!m) return [0, 0]; var pt = ink.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY; var r = pt.matrixTransform(m.inverse()); return [r.x, r.y]; }
   function eraseAt(q) {   // remove every mark that passes within ~14 screen px of the finger
-    var L = DR[C[idx].page]; if (!L || !L.length) return; var m = ink.getScreenCTM(), tol = 14 / ((m && m.a) || 1), n0 = L.length;   // 14 screen px in chart units
-    DR[C[idx].page] = L.filter(function (st) { var T = TOOLS[st.t] || TOOLS.red, tl = tol + T.w / 2;
+    var L = VD[V[idx].page]; if (!L || !L.length) return; var m = ink.getScreenCTM(), tol = 14 / ((m && m.a) || 1), n0 = L.length;   // 14 screen px in chart units
+    VD[V[idx].page] = L.filter(function (st) { var T = TOOLS[st.t] || TOOLS.red, tl = tol + T.w / 2;
       for (var i = 0; i < st.p.length; i++) { var a = st.p[i], b = st.p[i + 1] || a, dx = b[0] - a[0], dy = b[1] - a[1], L2 = dx * dx + dy * dy, t = L2 ? Math.max(0, Math.min(1, ((q[0] - a[0]) * dx + (q[1] - a[1]) * dy) / L2)) : 0;
         if (Math.hypot(q[0] - (a[0] + t * dx), q[1] - (a[1] + t * dy)) <= tl) return false; } return true; });
-    if (!DR[C[idx].page].length) delete DR[C[idx].page]; if ((DR[C[idx].page] || []).length !== n0) { saveD(); paintSvg(ink, C[idx]); } }
+    if (!VD[V[idx].page].length) delete VD[V[idx].page]; if ((VD[V[idx].page] || []).length !== n0) { saveV(); paintSvg(ink, V[idx], VD); } }
   function markTool() { ov.querySelectorAll('[data-wt2]').forEach(function (b) { var o = b.dataset.wt2 === tool; b.classList.toggle('on', o); b.setAttribute('aria-pressed', o ? 'true' : 'false'); }); }
   function setDraw(on) { draw = on; var b = ov.querySelector('.wxc-dr'); b.classList.toggle('on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); b.textContent = on ? '✎ Drawing' : '✎ Draw';
     ov.querySelector('.wxc-tools').hidden = !on; ov.classList.toggle('drawing', on); markTool(); }
-  function go(i) { if (i < 0 || i >= C.length) return; idx = i; img.src = C[i].src; paintSvg(ink, C[i]); ov.querySelector('.wxc-t').textContent = (i + 1) + ' / ' + C.length + ' · ' + tt(C[i]) + ' · p' + C[i].page;
-    ov.querySelector('.wxc-prev').disabled = i === 0; ov.querySelector('.wxc-next').disabled = i === C.length - 1; fit(); }
-  function open(i) { ensure(); ov.hidden = false; document.documentElement.classList.add('wxc-lock'); go(i); }
-  function close() { if (!ov) return; ov.hidden = true; setDraw(false); paintList(); document.documentElement.classList.remove('wxc-lock'); var f = mode === 'grid' ? document.querySelector('[data-wi2="' + idx + '"]') : $('wxc-' + idx); if (f) f.scrollIntoView({ block: 'center' }); }
-  return { init: init, show: show, open: open };
+  function go(i) { if (i < 0 || i >= V.length) return; idx = i; img.src = V[i].src; paintSvg(ink, V[i], VD); ov.querySelector('.wxc-t').textContent = V === C ? (i + 1) + ' / ' + C.length + ' · ' + tt(C[i]) + ' · p' + C[i].page : (V.length > 1 ? (i + 1) + ' / ' + V.length + ' · ' : '') + tt(V[i]);
+    ov.querySelector('.wxc-prev').disabled = i === 0; ov.querySelector('.wxc-next').disabled = i === V.length - 1; ov.classList.toggle('single', V.length < 2); fit(); }
+  function open(i) { V = C; VD = DR; VK = DK; ensure(); ov.hidden = false; document.documentElement.classList.add('wxc-lock'); go(i); }
+  function view(list, i, key) { V = list || []; VK = key || 'fp.wxd.view'; try { VD = JSON.parse(localStorage.getItem(VK) || '{}') || {}; } catch (e) { VD = {}; } ensure(); ov.hidden = false; document.documentElement.classList.add('wxc-lock'); go(i || 0); }
+  function close() { if (!ov) return; ov.hidden = true; setDraw(false); if (V !== C) { document.documentElement.classList.remove('wxc-lock'); return; } paintList(); document.documentElement.classList.remove('wxc-lock'); var f = mode === 'grid' ? document.querySelector('[data-wi2="' + idx + '"]') : $('wxc-' + idx); if (f) f.scrollIntoView({ block: 'center' }); }
+  return { init: init, show: show, open: open, view: view };
 })();
