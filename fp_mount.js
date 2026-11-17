@@ -30,6 +30,7 @@ window.FPMount = function (rec, opt) {
   try { if (D.turn && D.turn.phases && D.turn.phases.length) localStorage.setItem('fp.turn.def', JSON.stringify(D.turn)); else { var tdef = JSON.parse(localStorage.getItem('fp.turn.def') || 'null'); if (tdef && tdef.phases && tdef.phases.length) D.turn = tdef; } } catch (e) { }
   // v3.9 (pilot 16 NOV 26): GND = ground phase: Checklist (own cockpit flow) + OTP (STD timeline from the flight file)
   var hasOtp = !!(D.flight && D.flight.std && D.turn && D.turn.phases && D.turn.phases.length);
+  if (D.flight && (D.nat || (window.FPNat && window.FPNat.libOk && window.FPNat.libOk()))) sv += '<section id="v-nat" class="view" data-view="nat" hidden><div id="nat"></div></section>';   // v3.11 NAT
   if (D.flight) sv += '<section id="v-gnd" class="view" data-view="gnd" hidden><div id="gnd"><div class="gtabs" role="tablist"><button type="button" role="tab" data-gt="chk">Checklist</button>' +
     (hasOtp ? '<button type="button" role="tab" data-gt="otp">OTP · on-time performance</button>' : '') + '</div><div id="gnd-chk"></div>' + (hasOtp ? '<div id="gnd-otp" hidden><div id="turn"></div></div>' : '') + '</div></section>';
   if (opt.app) sv += '<section id="v-regs" class="view" data-view="regs" hidden><div id="regs"></div></section>';   // v3: regulations library (app only)
@@ -44,7 +45,7 @@ window.FPMount = function (rec, opt) {
   M.ensureAll = function () { Object.keys(pending).forEach(M.ensure); };
   M.isPending = function (k) { return !!pending[k]; };
   /* ---------- navigation: PREPARATION group, IN FLIGHT group (+ FLIGHTS in the app) */
-  var META = { dash: ['DASH', 'dash'], dep: ['DEP', 'dep'], wxnotam: ['WX·NOTAM', 'wx'], tem: ['TEM', 'tem'], arr: ['ARR', 'arr'], regs: ['REGS', 'book'], gnd: ['GND', 'gnd'], now: ['NOW', 'now'], waypoints: ['WPTS', 'wpt'], 'route-map': ['MAP', 'map'], flights: ['FLIGHTS', 'folder'] };
+  var META = { dash: ['DASH', 'dash'], dep: ['DEP', 'dep'], wxnotam: ['WX·NOTAM', 'wx'], tem: ['TEM', 'tem'], arr: ['ARR', 'arr'], regs: ['REGS', 'book'], gnd: ['GND', 'gnd'], nat: ['NAT', 'nat'], now: ['NOW', 'now'], waypoints: ['WPTS', 'wpt'], 'route-map': ['MAP', 'map'], flights: ['FLIGHTS', 'folder'] };
   var FLT = { now: 1, enr: 1, map: 1 }, prep_ = [], flt = [], seen = {};
   rec.tabs.forEach(function (t) {
     var k = t[0]; if (!$('v-' + k) || seen[k]) return; seen[k] = 1;
@@ -53,6 +54,7 @@ window.FPMount = function (rec, opt) {
   });
   if (hasWx && !seen.wxnotam) { var ix = prep_.map(function (t) { return t[0]; }).indexOf('dep'); prep_.splice(ix >= 0 ? ix + 1 : prep_.length, 0, ['wxnotam', 'WX · NOTAM', 'prep']); }
   if ($('v-gnd')) { var ixd = prep_.map(function (t) { return t[0]; }).indexOf('dash'); prep_.splice(ixd >= 0 ? ixd + 1 : 0, 0, ['gnd', 'Ground phase – checklist and OTP', 'prep']); }
+  if ($('v-nat')) flt.push(['nat', 'NAT – North Atlantic: in-flight checklist, procedures, contingency', 'flt']);
   if (opt.app && $('v-regs')) prep_.push(['regs', 'Regulations (Lido CRAR / RSI)', 'prep']);
   function item(t) {
     var k = t[0], m = META[k] || [t[1], 'page'];
@@ -70,7 +72,8 @@ window.FPMount = function (rec, opt) {
   // pages mounted now: pictures + reference links
   document.querySelectorAll('.view:not([data-lazy])').forEach(function (s) { if (window.FPImg) window.FPImg.hydrate(s); if (window.FPRefs) window.FPRefs.scan(s); });
   window.FPLive(rec.data);
-  if (window.FPGnd && $('gnd')) window.FPGnd.init(window.FPRec);   // v3.9
+  if (window.FPGnd && $('gnd')) window.FPGnd.init(window.FPRec);
+  if (window.FPNat && $('nat')) window.FPNat.init(rec.data);   // v3.11   // v3.9
   if (window.FPCold) window.FPCold.init(rec.data);   // v3.10: cold weather / icing (library 'cold' + data.cold)
   if (window.FPBrief) window.FPBrief.init(rec.data);   // v3.9.4 (+ ❄ Icing tab)
   if (window.FPWxc) window.FPWxc.init(rec.data);   // v3.9.5: OFP weather charts tab on WX·NOTAM

@@ -106,7 +106,13 @@ Preparation aid only – the OFP, official Emirates documentation and ATC prevai
 ## 3.9.6 (16 NOV 2026)
 - OFP weather charts: chart names (read from the chart when the flight file is built, data.wxcharts[].title), overview grid (default) | full-size list, ✎ marked badge on cards, ⌫ eraser for single marks.
 
-## 3.10.0 (17 NOV 2026) – cold weather / icing (PREVIEW, not released)
+## 3.11.0 (17 NOV 2026) – NAT (North Atlantic) page
+- New fp_nat.js: NAT in the IN FLIGHT group (shown when the flight file has data.nat or the 'nat' library is loaded). Tabs: In-flight checklist · This flight · Procedures · Contingency.
+- Checklist from the 'nat' library (fpapp.library.v1, kind 'nat': check / timers / html.proc / html.cont / html.wptcheck / sources / flags). Phases timed by anchors OEP±n, EXIT±n, BDY±n, EL<min>±n from FPCore.toMin(); the current phase opens and is marked NOW. Ticks with UTC stamp in fp.nat.<id>, waypoint checks in fp.natw.<id>.
+- "Start NAT timer bubbles": the next timer as a bubble, the others hidden to the edge tab (Timers board).
+- data.nat (entry, exit, bdy, wpts, summary, notes, ots, timers) is built per flight from the OFP. Company text only in the library / flight files.
+
+## 3.10.0 (17 NOV 2026) – cold weather / icing
 - New fp_cold.js. DEP and ARR get a "❄ Icing" tab (through fp_brief.js v1.1, which also now hides the card's own section bar / briefed button on the other tabs). NOW gets an "Icing – in-flight procedure" card.
 - DEP: worksheet v2.0 (fillable, per flight and leg: fp.cold.ws.<id>.dep / .ret; HOT expiry + live countdown; "Start HOT timer bubbles" puts two timers in FPCore.S.timers), original sheet and the 10.3.1.3 flow in the full-screen pen viewer, OM-C 10.3 procedure, A350 actions, HOT tables (50 pictures + notes, Table 57, allowance tables 53-56), departure airport part.
 - ARR: cold weather arrival (OM-C 10.4.1 with a correction helper: next colder row, next higher column, extrapolation above 5000 ft) + the next departure's set (worksheet / procedure / A350 / HOT / airport).

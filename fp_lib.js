@@ -522,6 +522,7 @@
     if (l.kind === 'fir') return 'FIR comms: <b>' + Object.keys(l.firs || {}).sort().join(', ') + '</b>';
     if (l.kind === 'mel') return 'MEL: <b>' + Object.keys(l.items || {}).length + ' items</b>';
     if (l.kind === 'route') return 'Route packs: <b>' + Object.keys(l.routes || {}).sort().join(', ') + '</b>';
+    if (l.kind === 'nat') return 'NAT procedures: <b>' + esc(l.title || '') + '</b>';
     if (l.kind === 'cold') return 'Cold weather / icing: <b>' + esc(l.title || '') + '</b> (' + ((l.hot || []).length) + ' HOT tables)';
     if (l.kind === 'regs') return 'Regulations: <b>' + (l.countries || []).length + ' countries, ' + (l.regions || []).length + ' regions</b>';
     return esc(l.title || l.kind);
