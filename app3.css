@@ -818,3 +818,18 @@ q.nat-ph { quotes: '“' '”'; font-weight: 650; font-family: ui-monospace, Men
 @media (max-width: 700px) { .nat-cr { grid-template-columns: 44px 1fr; } .nat-cr .nat-rs { grid-column: 2; text-align: left; } }
 .nat-ph.nat-now { border: 2px solid var(--cyan); position: relative; } .nat-nowb { position: absolute; top: -9px; left: 12px; background: var(--cyan); color: #fff; font: 800 10.5px var(--body); letter-spacing: .08em; padding: 1px 7px; border-radius: 6px; }
 .nat-fig img { max-height: 520px; width: auto; }
+/* v3.12 NAT decision trees */
+.nat-dt { border: 1px solid var(--line); border-radius: 12px; background: var(--panel); padding: 10px 12px; margin: 10px 12px 14px; }
+.dt-t { font-weight: 800; font-size: 15px; margin-bottom: 8px; }
+.dt-done { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px; font-size: 13.5px; color: var(--muted); padding: 5px 0; border-bottom: 1px dotted var(--line); }
+.dt-done span { flex: 1 1 220px; } .dt-done b { font-weight: 800; } .dt-done b.y { color: var(--green, #2a9d5c); } .dt-done b.n { color: var(--red, #c0392b); }
+.dt-back, .dt-reset { background: none; border: 0; color: var(--cyan); font-weight: 700; font-size: 12.5px; cursor: pointer; padding: 4px 2px; min-height: 30px; }
+.dt-q p { font-size: 16px; font-weight: 700; margin: 10px 0 4px; } .dt-q small { display: block; color: var(--muted); font-size: 13px; margin-bottom: 6px; }
+.dt-btns { display: flex; gap: 10px; margin: 8px 0 4px; } .dt-btns button { flex: 1; min-height: 48px; border-radius: 10px; font-size: 16px; font-weight: 800; cursor: pointer; border: 2px solid; background: var(--bg); }
+.dt-y { border-color: var(--green, #2a9d5c) !important; color: var(--green, #2a9d5c); } .dt-n { border-color: var(--red, #c0392b) !important; color: var(--red, #c0392b); }
+.dt-r { border-radius: 10px; padding: 10px 12px; margin-top: 10px; border: 2px solid var(--green, #2a9d5c); }
+.dt-r.dt-warn { border-color: var(--amb); } .dt-r.dt-stop { border-color: var(--red, #c0392b); }
+.dt-r > small { display: block; font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.dt-rem { font: 800 15px/1.35 ui-monospace, Menlo, monospace; background: var(--panel2); border-radius: 8px; padding: 6px 8px; margin: 6px 0; }
+.dt-out { font-weight: 800; font-size: 15px; margin: 6px 0; } .dt-r p { margin: 6px 0; font-size: 14.5px; } .dt-r small:not(:first-child) { display: block; color: var(--muted); font-size: 13px; margin-top: 4px; }
+.dt-r > small.dt-note { text-transform: none; letter-spacing: 0; font-weight: 600; font-size: 13px; color: var(--muted); margin-top: 6px; }

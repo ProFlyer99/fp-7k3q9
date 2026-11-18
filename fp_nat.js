@@ -69,7 +69,7 @@ window.FPNat = (function () {
     if (n.html) h += n.html;
     return h;
   }
-  function render() {
+  function render() { setTimeout(function () { if (root) paintTrees(); }, 0);
     if (!root) return;
     var tabs = [['chk', 'In-flight checklist'], ['flt', 'This flight'], ['proc', 'Procedures'], ['cont', 'Contingency']];
     if (!LIB) tabs = tabs.filter(function (t) { return t[0] === 'chk' || t[0] === 'flt'; });
@@ -99,9 +99,28 @@ window.FPNat = (function () {
       c.S.timers.push({ id: 'n' + Date.now().toString(36) + i, name: x[1], min: 0, end: base + x[0] * 60000, rep: false, start: base, bub: i === 0 ? 'on' : 'hidden' }); });
     c.save(); if (c.toast) c.toast(L.length + ' NAT timers started – the next one as a bubble, the others on the edge tab and the Timers board.');
   }
+  /* ---------- interactive decision trees (data in LIB.trees, placeholders in the library html) */
+  var DT = {};
+  function dtHtml(id) {
+    var T = LIB && LIB.trees && LIB.trees[id]; if (!T) return '';
+    var st = DT[id] || (DT[id] = { path: [], cur: T.start }), N = T.nodes, h = '';
+    if (T.title) h += '<div class="dt-t">' + T.title + '</div>';
+    st.path.forEach(function (p, i) { h += '<div class="dt-done"><span>' + N[p[0]].q + '</span><b class="' + (p[1] ? 'y' : 'n') + '">' + (p[1] ? 'Yes' : 'No') + '</b><button type="button" class="dt-back" data-dt="' + id + '" data-dta="back" data-dti="' + i + '">change</button></div>'; });
+    var n = N[st.cur] || {};
+    if (n.q) h += '<div class="dt-q"><p>' + n.q + '</p>' + (n.help ? '<small>' + n.help + '</small>' : '') + '<div class="dt-btns"><button type="button" class="dt-y" data-dt="' + id + '" data-dta="yes">Yes</button><button type="button" class="dt-n" data-dt="' + id + '" data-dta="no">No</button></div></div>';
+    else h += '<div class="dt-r dt-' + (n.k || 'ok') + '"><small>Result</small>' + (n.remark ? '<div class="dt-rem">' + n.remark + '</div>' : '') + (n.r ? '<p>' + n.r + '</p>' : '') + (n.out ? '<div class="dt-out">' + n.out + '</div>' : '') + (n.note ? '<small class="dt-note">' + n.note + '</small>' : '') + (n.ref ? '<i class="cw-r">' + n.ref + '</i>' : '') + '</div>';
+    if (st.path.length) h += '<button type="button" class="dt-reset" data-dt="' + id + '" data-dta="reset">Start again</button>';
+    return h;
+  }
+  function paintTrees(scope) { (scope || root).querySelectorAll('.nat-dt[data-tree]').forEach(function (el) { el.innerHTML = dtHtml(el.dataset.tree); }); }
   function wire() {
     root.addEventListener('click', function (e) {
       var b = e.target.closest('[data-nt]'); if (b) { show(b.dataset.nt); window.scrollTo(0, 0); return; }
+      var d = e.target.closest('[data-dt]'); if (d) { var id = d.dataset.dt, T = LIB.trees[id], st = DT[id], a = d.dataset.dta;
+        if (a === 'yes' || a === 'no') { var n = T.nodes[st.cur]; st.path.push([st.cur, a === 'yes']); st.cur = a === 'yes' ? n.yes : n.no; }
+        else if (a === 'back') { var i = +d.dataset.dti; st.cur = st.path[i][0]; st.path = st.path.slice(0, i); }
+        else if (a === 'reset') { st.path = []; st.cur = T.start; }
+        var box = d.closest('.nat-dt'); box.innerHTML = dtHtml(id); return; }
       var a = e.target.closest('[data-natact]'); if (!a) return;
       if (a.dataset.natact === 'timers') startTimers();
       else if (a.dataset.natact === 'reset') { if (!a._arm) { a._arm = 1; a.textContent = 'Reset all ticks?'; a.classList.add('arm'); setTimeout(function () { a._arm = 0; a.textContent = 'Reset ticks'; a.classList.remove('arm'); }, 3000); } else { put('fp.nat.' + FID, {}); put('fp.natw.' + FID, {}); render(); } }

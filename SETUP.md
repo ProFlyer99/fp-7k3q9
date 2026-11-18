@@ -106,6 +106,9 @@ Preparation aid only – the OFP, official Emirates documentation and ATC prevai
 ## 3.9.6 (16 NOV 2026)
 - OFP weather charts: chart names (read from the chart when the flight file is built, data.wxcharts[].title), overview grid (default) | full-size list, ✎ marked badge on cards, ⌫ eraser for single marks.
 
+## 3.12.0 (18 NOV 2026) – NAT interactive decision trees
+- fp_nat.js: generic yes/no decision trees. Library html holds <div class="nat-dt" data-tree="ID"></div>; data in LIB.trees[ID] = {title, start, nodes:{id:{q, help, yes, no} | {k: ok|warn|stop, remark, r, out, note, ref}}}. "change" goes back to an earlier answer, "Start again" resets. First tree: NAT OPS Bulletin 2025-001 GNSS interference (in the NAT library, Contingency).
+
 ## 3.11.0 (17 NOV 2026) – NAT (North Atlantic) page
 - New fp_nat.js: NAT in the IN FLIGHT group (shown when the flight file has data.nat or the 'nat' library is loaded). Tabs: In-flight checklist · This flight · Procedures · Contingency.
 - Checklist from the 'nat' library (fpapp.library.v1, kind 'nat': check / timers / html.proc / html.cont / html.wptcheck / sources / flags). Phases timed by anchors OEP±n, EXIT±n, BDY±n, EL<min>±n from FPCore.toMin(); the current phase opens and is marked NOW. Ticks with UTC stamp in fp.nat.<id>, waypoint checks in fp.natw.<id>.
